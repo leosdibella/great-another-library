@@ -1,4 +1,4 @@
-import { GalCustomElement, registerGalCustomElement } from '../lib/utilities';
+import { GalCustomElement } from '../lib/utilities';
 
 const styles = `
 <style>
@@ -36,28 +36,30 @@ export interface INavigationOption {
 }
 
 export class GalDocAppSidePanel extends GalCustomElement {
-  private static templateId: string = '';
-  private static document: Document;
-
   private static readonly navigationOptions: Readonly<INavigationOption[]> = [
     {
       displayText: 'Button',
-      href: '/button'
+      href: '#/button'
     }, {
       displayText: 'Modal',
-      href: '/Modal'
+      href: '#/modal'
     }
   ];
 
-  public static register(document: Document) {
-    GalDocAppSidePanel.templateId = registerGalCustomElement(
-      document,
-      GalDocAppSidePanel,
-      'gal-doc-app-side-panel',
-      html,
-      styles);
+  public static get tag() {
+    return 'gal-doc-app-side-panel';
+  }
 
-    GalDocAppSidePanel.document = document;
+  public static get html() {
+    return html;
+  }
+
+  public static get styles() {
+    return styles;
+  }
+
+  public static register(document: Document) {
+    GalCustomElement.registerGalCustomElement(document, GalDocAppSidePanel);
   }
 
   connectedCallback() {
@@ -84,7 +86,7 @@ export class GalDocAppSidePanel extends GalCustomElement {
   }
 
   constructor() {
-    super(GalDocAppSidePanel.templateId);
+    super(GalDocAppSidePanel.tag);
 
     this.setAttribute('role', 'navigation');
   }

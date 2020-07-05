@@ -1,4 +1,4 @@
-import { GalCustomElement, registerGalCustomElement } from "../lib/utilities";
+import { GalCustomElement } from "../lib/utilities";
 
 const styles = `
 <style>
@@ -32,18 +32,23 @@ const html = `
 `;
 
 export class GalDocApp extends GalCustomElement {
-  private static templateId: string = '';
+  public static get tag() {
+    return 'gal-doc-app';
+  }
+
+  public static get html() {
+    return html;
+  }
+
+  public static get styles() {
+    return styles;
+  }
 
   public static register(document: Document) {
-    GalDocApp.templateId = registerGalCustomElement(
-      document,
-      GalDocApp,
-      'gal-doc-app',
-      html,
-      styles);
+    GalCustomElement.registerGalCustomElement(document, GalDocApp);
   }
 
   constructor() {
-    super(GalDocApp.templateId);
+    super(GalDocApp.tag);
   }
 }

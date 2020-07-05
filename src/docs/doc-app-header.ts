@@ -1,4 +1,4 @@
-import { GalCustomElement, registerGalCustomElement } from '../lib/utilities';
+import { GalCustomElement, } from '../lib/utilities';
 
 const styles = `
 <style>
@@ -25,19 +25,24 @@ const html = `
 `;
 
 export class GalDocAppHeader extends GalCustomElement {
-  private static templateId: string = '';
+  public static get tag() {
+    return 'gal-doc-app-header';
+  }
+
+  public static get html() {
+    return html;
+  }
+
+  public static get styles() {
+    return styles;
+  }
 
   public static register(document: Document) {
-    GalDocAppHeader.templateId = registerGalCustomElement(
-      document,
-      GalDocAppHeader,
-      'gal-doc-app-header',
-      html,
-      styles);
+    GalCustomElement.registerGalCustomElement(document, GalDocAppHeader);
   }
 
   constructor() {
-    super(GalDocAppHeader.templateId);
+    super(GalDocAppHeader.tag);
 
     this.setAttribute('role', 'banner');
   }

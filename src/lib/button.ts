@@ -17,51 +17,51 @@ export enum ButtonColor {
 }
 
 export class GalButton extends HTMLButtonElement {
-  static get observedAttributes(): string[] {
-    return ['color', 'size'];
+  public static readonly observedAttributes: Readonly<string[]> = ['color', 'size'];
+
+  public static register() {
+    customElements.define('gal-button', GalButton, { extends: 'button' });
   }
 
-  #color!: ButtonColor;
-  #size!: ButtonSize;
+  #color: ButtonColor = ButtonColor.primary;
+  #size: ButtonSize = ButtonSize.medium;
 
   #attributes: Readonly<
     Partial<Record<keyof GalButton, (from: string, to: string) => void>>
-  > = Object.freeze<
-    Partial<Record<keyof GalButton, (from: string, to: string) => void>>
-  >({
-    color: (from, to) => {
-      if (Object.values(ButtonColor).indexOf(to as ButtonColor) > -1) {
-        this.color = to as ButtonColor;
+  > = {
+    color: (from, to: ButtonColor) => {
+      if (Object.values(ButtonColor).indexOf(to) > -1) {
+        this.color = to;
       }
     },
-    size: (from, to) => {
-      if (Object.values(ButtonSize).indexOf(to as ButtonSize) > -1) {
-        this.size = to as ButtonSize;
+    size: (from, to: ButtonSize) => {
+      if (Object.values(ButtonSize).indexOf(to) > -1) {
+        this.size = to;
       }
     }
-  });
+  };
 
-  set color(color) {
+  public set color(color) {
     this.classList.remove(`gal-${this.#color}-background-color`);
     this.#color = color;
     this.classList.add(`gal-${this.#color}-background-color`);
   }
   
-  get color() {
+  public get color() {
     return this.#color;
   }
 
-  set size(size) {
+  public set size(size) {
     this.classList.remove(`gal-button-${this.#size}`);
     this.#size = size;
     this.classList.add(`gal-button-${this.#size}`);
   }
 
-  get size() {
+  public get size() {
     return this.#size;
   }
 
-  connectedCallback() {
+  public connectedCallback() {
     if (!this.#color) {
       this.color = ButtonColor.primary;
     }
@@ -71,7 +71,7 @@ export class GalButton extends HTMLButtonElement {
     }
   }
 
-  attributeChangedCallback(name: keyof GalButton, from: string, to: string) {
+  public attributeChangedCallback(name: keyof GalButton, from: string, to: string) {
     if (from === to) {
       return;
     }
@@ -87,5 +87,3 @@ export class GalButton extends HTMLButtonElement {
     super();
   }
 }
-
-customElements.define('gal-button', GalButton, { extends: 'button' });

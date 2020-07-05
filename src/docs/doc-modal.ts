@@ -2,27 +2,18 @@ import { GalCustomElement } from '../lib/utilities';
 
 const styles = `
 <style>
-  :host {
-    display: block;
-    height: 100%;
-    overflow-y: auto;
-    padding: 2rem;
-    flex: 1 0 auto;
-  }
 </style>
 `;
 
 const html = `
 <main>
-  MAIN
-  <gal-router>
-  </gal-router>
+  Modal Documentation
 </main>
 `;
 
-export class GalDocAppMain extends GalCustomElement {
+export class GalDocModal extends GalCustomElement {
   public static get tag() {
-    return 'gal-doc-app-main';
+    return 'gal-doc-modal';
   }
 
   public static get html() {
@@ -34,10 +25,10 @@ export class GalDocAppMain extends GalCustomElement {
   }
 
   public static register(document: Document) {
-    GalCustomElement.registerGalCustomElement(document, GalDocAppMain);
+    GalCustomElement.registerGalCustomElement(document, GalDocModal);
   }
 
   constructor() {
-    super(GalDocAppMain.tag);
+    super(GalDocModal.tag);
   }
 }
