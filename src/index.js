@@ -1,11 +1,8 @@
-/**
- * This file is just a silly example to show everything working in the browser.
- * When you're ready to start on your site, clear the file. Happy hacking!
- **/
+import { GalDocApp, GalDocAppHeader, GalDocAppMain, GalDocAppSidePanel } from './docs';
 
-import confetti from 'canvas-confetti';
+GalDocAppHeader.register(document);
+GalDocAppSidePanel.register(document);
+GalDocAppMain.register(document);
+GalDocApp.register(document);
 
-confetti.create(document.getElementById('canvas'), {
-  resize: true,
-  useWorker: true,
-})({ particleCount: 200, spread: 200 });
+document.body.appendChild(new GalDocApp());

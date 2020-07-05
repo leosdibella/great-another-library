@@ -1,0 +1,33 @@
+.gal-flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.gal-flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gal-flex-stable {
+  flex: auto 0 0;
+}
+
+.gal-flex-grow {
+  flex: 1 0 auto;
+}
+
+.gal-justify-content-center {
+  justify-content: center;
+}
+
+.gal-align-items-center {
+  align-items: center;
+}
+
+.gal-full-height {
+  height: 100%;
+}
+
+.gal-overflow-y-auto {
+  overflow-y: auto;
+}

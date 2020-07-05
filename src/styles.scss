@@ -1,0 +1,59 @@
+@import './flex';
+
+$primary: #ffa3d9;
+$secondary: #94fffb;
+$accent: #96ffcc;
+$foreground: #333333;
+
+$color-map: (
+  primary: $primary,
+  secondary: $secondary,
+  accent: $accent
+);
+
+$button-size-map: (
+  very-small: (
+    font-size: 0.666rem,
+    padding: 0.25rem 0.5rem
+  ),
+  small: (
+    font-size: 0.75rem,
+    padding: 0.333rem 0.666rem
+  ),
+  medium: (
+    font-size: 1rem,
+    padding: 0.5rem 0.75rem
+  ),
+  large: (
+    font-size: 1.25rem,
+    padding: 0.666rem 1rem
+  ),
+  extra-large: (
+    font-size: 1.333rem,
+    padding: 0.75rem 1.333rem
+  )
+);
+
+:root {
+  --gal-primary-color: #{$primary};
+  --gal-secondary-color: #{$secondary};
+  --gal-accent-color: #{$accent};
+  --gal-foreground-color: #{$foreground};
+}
+
+@each $name, $color in $color-map {
+  .gal-#{$name}-background-color {
+    background-color: $color;
+    background-color: var(--gal-#{$name}-color);
+  }
+}
+
+@each $name, $values in $button-size-map {
+  .gal-button-#{$name} {
+    border: none;
+    border-radius: 0.125rem;
+    color: var(--gal-foreground-color);
+    font-size: map-get($values, font-size);
+    padding: map-get($values, padding);
+  }
+}

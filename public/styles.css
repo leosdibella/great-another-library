@@ -1,0 +1,95 @@
+.gal-flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.gal-flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gal-flex-stable {
+  flex: auto 0 0;
+}
+
+.gal-flex-grow {
+  flex: 1 0 auto;
+}
+
+.gal-justify-content-center {
+  justify-content: center;
+}
+
+.gal-align-items-center {
+  align-items: center;
+}
+
+.gal-full-height {
+  height: 100%;
+}
+
+.gal-overflow-y-auto {
+  overflow-y: auto;
+}
+
+:root {
+  --gal-primary-color: #ffa3d9;
+  --gal-secondary-color: #94fffb;
+  --gal-accent-color: #96ffcc;
+  --gal-foreground-color: #333333;
+}
+
+.gal-primary-background-color {
+  background-color: #ffa3d9;
+  background-color: var(--gal-primary-color);
+}
+
+.gal-secondary-background-color {
+  background-color: #94fffb;
+  background-color: var(--gal-secondary-color);
+}
+
+.gal-accent-background-color {
+  background-color: #96ffcc;
+  background-color: var(--gal-accent-color);
+}
+
+.gal-button-very-small {
+  border: none;
+  border-radius: 0.125rem;
+  color: var(--gal-foreground-color);
+  font-size: 0.666rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.gal-button-small {
+  border: none;
+  border-radius: 0.125rem;
+  color: var(--gal-foreground-color);
+  font-size: 0.75rem;
+  padding: 0.333rem 0.666rem;
+}
+
+.gal-button-medium {
+  border: none;
+  border-radius: 0.125rem;
+  color: var(--gal-foreground-color);
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.gal-button-large {
+  border: none;
+  border-radius: 0.125rem;
+  color: var(--gal-foreground-color);
+  font-size: 1.25rem;
+  padding: 0.666rem 1rem;
+}
+
+.gal-button-extra-large {
+  border: none;
+  border-radius: 0.125rem;
+  color: var(--gal-foreground-color);
+  font-size: 1.333rem;
+  padding: 0.75rem 1.333rem;
+}
