@@ -4,6 +4,8 @@ $primary: #ffa3d9;
 $secondary: #94fffb;
 $accent: #96ffcc;
 $foreground: #333333;
+$background: #ffffff;
+$disabled: #cccccc;
 
 $color-map: (
   primary: $primary,
@@ -39,6 +41,8 @@ $button-size-map: (
   --gal-secondary-color: #{$secondary};
   --gal-accent-color: #{$accent};
   --gal-foreground-color: #{$foreground};
+  --gal-background-color: #{$background};
+  --gal-disabled-color: #{$disabled};
 }
 
 @each $name, $color in $color-map {
@@ -46,12 +50,33 @@ $button-size-map: (
     background-color: $color;
     background-color: var(--gal-#{$name}-color);
   }
+
+  .gal-#{$name}-background-color:hover:not(:disabled) {
+    transition: box-shadow 150ms ease-in-out;
+    box-shadow: inset 0 0 1rem 3rem rgba(255, 255, 255, 0.5);
+  }
+
+  .gal-#{$name}-background-color:active:not(:disabled) {
+    box-shadow: inset 0 0 1rem 3rem rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .gal-#{$name}-background-color:focus:not(:disabled) {
+    transition: all 150ms ease-in-out;
+    outline: none;
+    box-shadow: inset 0 0 1rem 3rem rgba(0, 0, 0, 0.125);
+    color: var(--gal-background-color);
+  }
+
+  .gal-#{$name}-background-color:disabled {
+    background-color: var(--gal-disabled-color);
+    cursor: not-allowed;
+  }
 }
 
 @each $name, $values in $button-size-map {
   .gal-button-#{$name} {
     border: none;
-    border-radius: 0.125rem;
+    border-radius: 0.25rem;
     color: var(--gal-foreground-color);
     font-size: map-get($values, font-size);
     padding: map-get($values, padding);

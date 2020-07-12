@@ -7,7 +7,7 @@ const styles = `
     height: 100%;
     overflow-y: auto;
     padding: 2rem;
-    flex: 1 0 auto;
+    flex: 1 1 auto;
   }
 </style>
 `;

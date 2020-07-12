@@ -45,6 +45,10 @@ export interface GalDocAppSidePanel extends IGalCustomElementDefinition {};
 export class GalDocAppSidePanel extends HTMLElement {
   private static readonly navigationOptions: Readonly<INavigationOption[]> = [
     {
+      displayText: 'Home',
+      href: '#/'
+    },
+    {
       displayText: 'Button',
       href: '#/button'
     }, {

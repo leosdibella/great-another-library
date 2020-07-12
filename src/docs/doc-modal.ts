@@ -6,9 +6,9 @@ const styles = `
 `;
 
 const html = `
-<main>
-  Modal Documentation
-</main>
+  <h2>
+    Modal Documentation
+  </h2>
 `;
 
 @GalCustomElement({

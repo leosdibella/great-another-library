@@ -6,7 +6,9 @@ const styles = `
 `;
 
 const html = `
-  This is an introduction to this library, I promise I'll make it more interesting ...
+  <h2>
+    This is an introduction to this library, I promise I'll make it more interesting ...
+  </h2>
 `;
 
 @GalCustomElement({
