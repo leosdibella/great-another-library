@@ -14,30 +14,18 @@ const styles = `
 
 const html = `
 <main>
-  MAIN
   <gal-router>
   </gal-router>
 </main>
 `;
 
-export class GalDocAppMain extends GalCustomElement {
-  public static get tag() {
-    return 'gal-doc-app-main';
-  }
-
-  public static get html() {
-    return html;
-  }
-
-  public static get styles() {
-    return styles;
-  }
-
-  public static register(document: Document) {
-    GalCustomElement.registerGalCustomElement(document, GalDocAppMain);
-  }
-
+@GalCustomElement({
+  styles,
+  html,
+  tag: 'gal-doc-app-main'
+})
+export class GalDocAppMain extends HTMLElement {
   constructor() {
-    super(GalDocAppMain.tag);
+    super();
   }
 }

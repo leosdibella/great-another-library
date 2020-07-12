@@ -1,51 +1,95 @@
 import { isNonEmptyString } from "./utilities";
 
-export interface IGalCustomElementConstructor extends CustomElementConstructor {
-  new(): GalCustomElement;
+interface IGalCustomElement<T = unknown> {
   tag: string;
-  document: Document;
+  document?: Document;
   html: string;
   styles?: string;
+  observedAttributes?: T[];
 }
 
-const registeredCustomElements: Record<string, boolean> = {};
+interface IGalExtendedCustomElement<T = unknown> {
+  document?: Document;
+  is: string;
+  extends: string;
+  observedAttributes?: T[];
+}
 
-export abstract class GalCustomElement extends HTMLElement {
-  public static document: Document;
+export interface IGalCustomElementDefinition {
+  document: Document;
+}
 
-  protected static registerGalCustomElement<T extends IGalCustomElementConstructor>(
-    document: Document,
-    galCustomElement: T
-  ) {
+export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
+  return function<S extends CustomElementConstructor>(customElement: S) {
+    const defaultObservedAttributes: T[] = [];
+    const defaultDocument: Document = galCustomElement.document || document;
+    const template = defaultDocument.createElement('template');
+
     if (!isNonEmptyString(galCustomElement.tag)) {
-      return ''
+      throw new Error('GalCustomElement constructor error: tag cannot be empty!');
     }
-  
+
     const templateId = `${galCustomElement.tag}-template`;
-  
-    if (registeredCustomElements[galCustomElement.tag]) {
-      return templateId;
+
+    if (customElements.get(galCustomElement.tag)) {
+      throw new Error('GalCustomElement constructor error: duplicate custom element tag detected!');
     }
-    
-    const template = document.createElement('template');
-  
-    galCustomElement.document = document;
+
     template.setAttribute('id', templateId);
     template.innerHTML = `${galCustomElement.styles || ''}${galCustomElement.html}`;
-    customElements.define(galCustomElement.tag, galCustomElement);
-    registeredCustomElements[galCustomElement.tag] = true;
-    document.body.appendChild(template);
+
+    const galCustomElementDefintion = class GalCustomElementDefinition extends customElement {
+      public static get observedAttributes() {
+        return galCustomElement.observedAttributes || defaultObservedAttributes;
+      }
+      
+      public get document() {
+        return defaultDocument;
+      }
+
+      public static get document() {
+        return defaultDocument;
+      }
+
+      public static get tag() {
+        return galCustomElement.tag;
+      }
     
-    return templateId;
+      constructor(...args: any[]) {
+        super();
+        
+        this.attachShadow({ mode: 'open' }).appendChild((template).content.cloneNode(true));
+      }
+    };
+
+    customElements.define(galCustomElement.tag, galCustomElementDefintion);
+    defaultDocument.body.appendChild(template);
+
+    return galCustomElementDefintion;
   }
+}
 
-  constructor(tag: string) {
-    super();
+export function GalExtendedCustomElement<T>(galExtendedCustomElement: IGalExtendedCustomElement<T>) {
+  return function<S extends CustomElementConstructor>(customElement: S) {
+    const defaultObservedAttributes: T[] = [];
+    const defaultDocument: Document = galExtendedCustomElement.document || document;
 
-    const template = tag ? document.getElementById(`${tag}-template`) : null;
+    const galExtendedCustomElementDefintion = class GalExtendedCustomElementDefintion extends customElement {
+      public static get observedAttributes() {
+        return galExtendedCustomElement.observedAttributes || defaultObservedAttributes;
+      }
 
-    if (template) {
-      this.attachShadow({ mode: 'open' }).appendChild((template as HTMLTemplateElement).content.cloneNode(true));
-    }
+      public static get document() {
+        return defaultDocument;
+      }
+
+      constructor(...args: any[]) {
+        super();
+      }
+    };
+
+    customElements.define(galExtendedCustomElement.is, galExtendedCustomElementDefintion, { extends: galExtendedCustomElement.extends });
+
+    return galExtendedCustomElementDefintion;
   }
 }

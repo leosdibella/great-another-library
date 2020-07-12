@@ -31,24 +31,14 @@ const html = `
 </div>
 `;
 
-export class GalDocApp extends GalCustomElement {
-  public static get tag() {
-    return 'gal-doc-app';
-  }
 
-  public static get html() {
-    return html;
-  }
-
-  public static get styles() {
-    return styles;
-  }
-
-  public static register(document: Document) {
-    GalCustomElement.registerGalCustomElement(document, GalDocApp);
-  }
-
+@GalCustomElement({
+  styles,
+  html,
+  tag: 'gal-doc-app'
+})
+export class GalDocApp extends HTMLElement {
   constructor() {
-    super(GalDocApp.tag);
+    super();
   }
 }

@@ -4,3 +4,4 @@ export * from './doc-app-main';
 export * from './doc-app-side-panel';
 export * from './doc-button';
 export * from './doc-modal';
+export * from './doc-intro';

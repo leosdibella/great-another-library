@@ -1,23 +1,12 @@
-import { GalDocApp, GalDocAppHeader, GalDocAppMain, GalDocAppSidePanel, GalDocButton, GalDocModal } from './docs';
-import { GalButton, GalRouter } from './lib'
-
-[
-  GalButton,
-  GalRouter
-].forEach(gce => gce.register(document));
-
-[
-  GalDocAppHeader,
-  GalDocAppSidePanel,
-  GalDocAppMain,
-  GalDocApp,
-  GalDocButton,
-  GalDocModal
-].forEach(gce => gce.register(document));
+import { GalDocApp, GalDocAppHeader, GalDocAppMain, GalDocAppSidePanel, GalDocButton, GalDocIntro, GalDocModal } from './docs';
+import { GalButton, GalRouter } from './lib';
 
 document.body.appendChild(new GalDocApp());
 
 GalRouter.registerRoutes([{
+  url: '/',
+  customElementTag: GalDocIntro.tag
+}, {
   url: '/button',
   customElementTag: GalDocButton.tag
 }, {

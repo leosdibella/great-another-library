@@ -6,17 +6,15 @@ const styles = `
 `;
 
 const html = `
-<main>
-  Button Documentation
-</main>
+  This is an introduction to this library, I promise I'll make it more interesting ...
 `;
 
 @GalCustomElement({
   styles,
   html,
-  tag: 'gal-doc-button'
+  tag: 'gal-doc-intro'
 })
-export class GalDocButton extends HTMLElement {
+export class GalDocIntro extends HTMLElement {
   constructor() {
     super();
   }

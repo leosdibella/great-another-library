@@ -1,3 +1,5 @@
+import { GalExtendedCustomElement } from "./utilities";
+
 export enum ButtonSize {
   verySmall = 'very-small',
   small = 'small',
@@ -16,13 +18,17 @@ export enum ButtonColor {
   success = 'success'
 }
 
+export type GalButtonAttribute = 'color' | 'size';
+
+@GalExtendedCustomElement<GalButtonAttribute>({
+  is: 'gal-button',
+  extends: 'button',
+  observedAttributes: [
+    'color',
+    'size'
+  ]
+})
 export class GalButton extends HTMLButtonElement {
-  public static readonly observedAttributes: Readonly<string[]> = ['color', 'size'];
-
-  public static register() {
-    customElements.define('gal-button', GalButton, { extends: 'button' });
-  }
-
   #color: ButtonColor = ButtonColor.primary;
   #size: ButtonSize = ButtonSize.medium;
 

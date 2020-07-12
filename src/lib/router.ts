@@ -1,4 +1,4 @@
-import { GalCustomElement, isNonEmptyString } from "./utilities";
+import { GalCustomElement, IGalCustomElementDefinition, isNonEmptyString } from "./utilities";
 
 export interface IRouteDefintion {
   customElementTag: string;
@@ -7,17 +7,15 @@ export interface IRouteDefintion {
 
 const html = '';
 
-export class GalRouter extends GalCustomElement {
+export interface GalRouter extends IGalCustomElementDefinition {};
+
+@GalCustomElement({
+  html,
+  tag: 'gal-router'
+})
+export class GalRouter extends HTMLElement {
   private static readonly routeTagMap: Record<string, string> = {};
   private static routeElement?: GalRouter;
-
-  public static get tag() {
-    return 'gal-router';
-  }
-
-  public static get html() {
-    return html;
-  }
 
   private static route() {
     const url = window.location.hash.slice(1) || '/';
@@ -26,17 +24,13 @@ export class GalRouter extends GalCustomElement {
 
   public static registerRoutes(routeDefinitions: IRouteDefintion[]) {
     routeDefinitions.forEach(rd => {
-      GalRouter.routeTagMap[rd.url] = rd.customElementTag;
+      GalRouter.routeTagMap[rd.url] = rd.customElementTag.toLowerCase();
     });
 
     window.addEventListener('load', GalRouter.route);
     window.addEventListener('hashchange', GalRouter.route);
   }
   
-  public static register(document: Document) {
-    GalCustomElement.registerGalCustomElement(document, GalRouter);
-  }
-
   public static resolveRoute = (route: string) => {
     if (!GalRouter.routeElement) {
       throw new Error('No router component found.');
@@ -53,7 +47,7 @@ export class GalRouter extends GalCustomElement {
     }
 
     if (GalRouter.routeElement.shadowRoot) {
-      const customElementInstance = GalRouter.document.createElement(tag);
+      const customElementInstance = GalRouter.prototype.document.createElement(tag);
 
       GalRouter.routeElement.shadowRoot.innerHTML = '';
       GalRouter.routeElement.shadowRoot.appendChild(customElementInstance);
@@ -65,6 +59,6 @@ export class GalRouter extends GalCustomElement {
   }
 
   constructor() {
-    super(GalRouter.tag);
+    super();
   }
 }

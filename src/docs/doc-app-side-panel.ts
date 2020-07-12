@@ -1,4 +1,4 @@
-import { GalCustomElement } from '../lib/utilities';
+import { GalCustomElement, IGalCustomElementDefinition } from '../lib/utilities';
 
 const styles = `
 <style>
@@ -35,7 +35,14 @@ export interface INavigationOption {
   href: string;
 }
 
-export class GalDocAppSidePanel extends GalCustomElement {
+export interface GalDocAppSidePanel extends IGalCustomElementDefinition {};
+
+@GalCustomElement({
+  styles,
+  html,
+  tag: 'gal-doc-app-side-panel'
+})
+export class GalDocAppSidePanel extends HTMLElement {
   private static readonly navigationOptions: Readonly<INavigationOption[]> = [
     {
       displayText: 'Button',
@@ -45,22 +52,6 @@ export class GalDocAppSidePanel extends GalCustomElement {
       href: '#/modal'
     }
   ];
-
-  public static get tag() {
-    return 'gal-doc-app-side-panel';
-  }
-
-  public static get html() {
-    return html;
-  }
-
-  public static get styles() {
-    return styles;
-  }
-
-  public static register(document: Document) {
-    GalCustomElement.registerGalCustomElement(document, GalDocAppSidePanel);
-  }
 
   connectedCallback() {
     if (!this.shadowRoot) {
@@ -74,7 +65,7 @@ export class GalDocAppSidePanel extends GalCustomElement {
     }
   
     GalDocAppSidePanel.navigationOptions.forEach(no => {
-      const navigationOption = GalDocAppSidePanel.document.createElement('li');
+      const navigationOption = this.document.createElement('li');
 
       navigationOption.innerHTML = `
         <a href=${no.href}>
@@ -86,7 +77,7 @@ export class GalDocAppSidePanel extends GalCustomElement {
   }
 
   constructor() {
-    super(GalDocAppSidePanel.tag);
+    super();
 
     this.setAttribute('role', 'navigation');
   }

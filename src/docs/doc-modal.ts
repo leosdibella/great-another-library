@@ -11,24 +11,13 @@ const html = `
 </main>
 `;
 
-export class GalDocModal extends GalCustomElement {
-  public static get tag() {
-    return 'gal-doc-modal';
-  }
-
-  public static get html() {
-    return html;
-  }
-
-  public static get styles() {
-    return styles;
-  }
-
-  public static register(document: Document) {
-    GalCustomElement.registerGalCustomElement(document, GalDocModal);
-  }
-
+@GalCustomElement({
+  styles,
+  html,
+  tag: 'gal-doc-modal'
+})
+export class GalDocModal extends HTMLElement {
   constructor() {
-    super(GalDocModal.tag);
+    super();
   }
 }
