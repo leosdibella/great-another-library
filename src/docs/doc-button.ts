@@ -24,6 +24,7 @@ const html = `
       Oh Look a big 'ole primary button
     </button>
     <button
+      gal-on-click="alertClickedSecondaryButton"
       is="gal-button"
       color="secondary"
       size="small">
@@ -58,6 +59,10 @@ const html = `
   tag: 'gal-doc-button'
 })
 export class GalDocButton extends HTMLElement {
+  public alertClickedSecondaryButton(event: Event) {
+    alert('Clicked the baby secondary button!');
+  }
+
   constructor() {
     super();
   }
