@@ -70,9 +70,8 @@ function parseGalHtml(html: string): IGalParsedHtml | undefined {
       if (attributes[i].name.match(galEventRegex)) {
         const eventFunctionName = attributes[i].nodeValue || '';
         const querySelector = `[${attributes[i].name}='${eventFunctionName}']`;
-        const existingQuerySelectorIndex = querySelectorIndices[querySelector];
 
-        if (existingQuerySelectorIndex !== undefined) {
+        if (querySelectorIndices[querySelector] !== undefined) {
           ++(querySelectorIndices[querySelector] as number);
         } else {
           querySelectorIndices[querySelector] = 0;
