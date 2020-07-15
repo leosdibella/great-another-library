@@ -24,7 +24,7 @@ const html = `
       Oh Look a big 'ole primary button
     </button>
     <button
-      gal-on-click="alertClickedSecondaryButton"
+      gal-on_click="alertClickedSecondaryButton"
       is="gal-button"
       color="secondary"
       size="small">

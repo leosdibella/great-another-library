@@ -27,8 +27,8 @@ interface IGalParsedHtml {
   events: IGalEvent[];
 }
 
-const galEventPrefix = 'gal-on:';
-const galEventRegex = /gal-on-[a-zA-Z0-9]+/g;
+const galEventPrefix = 'gal-on_';
+const galEventRegex = /gal-on_[a-zA-Z0-9]+/g;
 
 const galDomParser = (function () {
   const domParser = new DOMParser();
