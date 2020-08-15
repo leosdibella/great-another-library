@@ -51,9 +51,14 @@ export class GalDocAppSidePanel extends HTMLElement {
     {
       displayText: 'Button',
       href: '#/button'
-    }, {
+    },
+    {
       displayText: 'Modal',
       href: '#/modal'
+    },
+    {
+      displayText: 'Form Field',
+      href: '#/formField'
     }
   ];
 
