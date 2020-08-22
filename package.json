@@ -11,9 +11,16 @@
     "@babel/plugin-proposal-decorators": "^7.10.4",
     "@babel/preset-typescript": "^7.10.1",
     "@snowpack/plugin-babel": "^1.0.0",
+    "husky": "^4.2.5",
     "prettier": "^2.0.0",
+    "pretty-quick": "^3.0.0",
     "sass": "^1.26.7",
     "snowpack": "^2.0.0",
     "typescript": "^3.9.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   }
 }
