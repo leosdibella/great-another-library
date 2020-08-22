@@ -1,53 +1,19 @@
 import { isNonEmptyString, kebabCaseToCamelCase } from './utilities';
+import { IGalParsedHtml, parseGalHtml } from './gal-parser';
 
-interface IGalCustomElement<T> {
+export interface IGalCustomElement<T> {
   tag: string;
-  document?: Document;
   html: string;
   styles?: string;
   observedAttributes?: Record<string, keyof T | ''>;
   observedAttributesMapName?: keyof T;
 }
 
-interface IGalExtendedCustomElement<T> {
-  document?: Document;
+export interface IGalExtendedCustomElement<T> {
   is: string;
   extends: string;
   observedAttributes?: Record<string, keyof T | ''>;
   observedAttributesMapName?: keyof T;
-}
-
-interface IGalEvent {
-  eventName: string;
-  eventFunctionName: string;
-  querySelector: string;
-  querySelectorIndex: number;
-}
-
-interface IGalParsedHtml {
-  template: string;
-  events: IGalEvent[];
-}
-
-const galEventPrefix = 'gal-on_';
-const galEventRegex = /gal-on_[a-zA-Z0-9]+/g;
-
-const galDomParser = (function () {
-  const domParser = new DOMParser();
-
-  return function (html: string): HTMLCollection | undefined {
-    const body =
-      domParser.parseFromString(html, 'text/html').querySelector('body') ||
-      undefined;
-
-    return body ? body.children : undefined;
-  };
-})();
-
-function htmlCollectionToArray(htmlCollection: HTMLCollection) {
-  return Object.keys(htmlCollection)
-    .map((k) => htmlCollection.item(+k))
-    .filter((e) => e instanceof Element) as Element[];
 }
 
 function getObservedAttributes<T>(
@@ -70,67 +36,9 @@ function getObservedAttributes<T>(
   };
 }
 
-function parseGalHtml(html: string): IGalParsedHtml | undefined {
-  let htmlCollection = galDomParser(html);
-
-  if (!htmlCollection) {
-    return undefined;
-  }
-
-  const parsedHtml: IGalParsedHtml = {
-    template: html,
-    events: [],
-  };
-
-  const stack: Element[] = htmlCollectionToArray(htmlCollection);
-  const querySelectorIndices: Record<string, number | undefined> = {};
-
-  while (stack.length) {
-    const element = stack.pop() as Element;
-    const attributes = element.attributes;
-    const keys = Object.keys(attributes);
-
-    for (let i = 0; i < keys.length; ++i) {
-      if (attributes[i].name.match(galEventRegex)) {
-        const eventFunctionName = attributes[i].nodeValue || '';
-        const querySelector = `[${attributes[i].name}='${eventFunctionName}']`;
-
-        if (querySelectorIndices[querySelector] !== undefined) {
-          ++(querySelectorIndices[querySelector] as number);
-        } else {
-          querySelectorIndices[querySelector] = 0;
-        }
-
-        parsedHtml.events.push({
-          eventFunctionName,
-          eventName: attributes[i].name.substring(
-            galEventPrefix.length,
-            attributes[i].name.length,
-          ),
-          querySelector,
-          querySelectorIndex: querySelectorIndices[querySelector] as number,
-        });
-      }
-    }
-
-    if (!element.children.length) {
-      continue;
-    }
-
-    htmlCollectionToArray(element.children).forEach((e) => stack.push(e));
-  }
-
-  return parsedHtml;
-}
-
-export interface IGalCustomElementDefinition {
-  document: Document;
-}
-
 export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
   return function <S extends CustomElementConstructor>(customElement: S) {
-    const defaultDocument: Document = galCustomElement.document || document;
-    const template = defaultDocument.createElement('template');
+    const template = document.createElement('template');
 
     const { observedAttributes, observedAttributesMap } = getObservedAttributes<
       T
@@ -166,14 +74,6 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
     const galCustomElementDefintion = class GalCustomElementDefinition extends customElement {
       public static get observedAttributes() {
         return observedAttributes;
-      }
-
-      public get document() {
-        return defaultDocument;
-      }
-
-      public static get document() {
-        return defaultDocument;
       }
 
       public static get tag() {
@@ -244,7 +144,7 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
     };
 
     customElements.define(galCustomElement.tag, galCustomElementDefintion);
-    defaultDocument.body.appendChild(template);
+    document.body.appendChild(template);
 
     return galCustomElementDefintion;
   };
@@ -254,9 +154,6 @@ export function GalExtendedCustomElement<T>(
   galExtendedCustomElement: IGalExtendedCustomElement<T>,
 ) {
   return function <S extends CustomElementConstructor>(customElement: S) {
-    const defaultDocument: Document =
-      galExtendedCustomElement.document || document;
-
     const { observedAttributes, observedAttributesMap } = getObservedAttributes<
       T
     >(galExtendedCustomElement.observedAttributes || {});
@@ -264,10 +161,6 @@ export function GalExtendedCustomElement<T>(
     const galExtendedCustomElementDefintion = class GalExtendedCustomElementDefintion extends customElement {
       public static get observedAttributes() {
         return observedAttributes;
-      }
-
-      public static get document() {
-        return defaultDocument;
       }
 
       public attributeChangedCallback(name: string, from: string, to: string) {

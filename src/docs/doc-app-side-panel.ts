@@ -1,4 +1,4 @@
-import { GalCustomElement, IGalCustomElementDefinition } from '../lib/utilities';
+import { GalCustomElement } from '../lib/utilities';
 
 const styles = `
 <style>
@@ -35,31 +35,29 @@ export interface INavigationOption {
   href: string;
 }
 
-export interface GalDocAppSidePanel extends IGalCustomElementDefinition {};
-
 @GalCustomElement({
   styles,
   html,
-  tag: 'gal-doc-app-side-panel'
+  tag: 'gal-doc-app-side-panel',
 })
 export class GalDocAppSidePanel extends HTMLElement {
   private static readonly navigationOptions: Readonly<INavigationOption[]> = [
     {
       displayText: 'Home',
-      href: '#/'
+      href: '#/',
     },
     {
       displayText: 'Button',
-      href: '#/button'
+      href: '#/button',
     },
     {
       displayText: 'Modal',
-      href: '#/modal'
+      href: '#/modal',
     },
     {
       displayText: 'Form Field',
-      href: '#/formField'
-    }
+      href: '#/formField',
+    },
   ];
 
   connectedCallback() {
@@ -72,15 +70,15 @@ export class GalDocAppSidePanel extends HTMLElement {
     if (!navigationOptions) {
       return;
     }
-  
-    GalDocAppSidePanel.navigationOptions.forEach(no => {
-      const navigationOption = this.document.createElement('li');
+
+    GalDocAppSidePanel.navigationOptions.forEach((no) => {
+      const navigationOption = document.createElement('li');
 
       navigationOption.innerHTML = `
         <a href=${no.href}>
           ${no.displayText}
         </a>
-      `
+      `;
       navigationOptions.appendChild(navigationOption);
     });
   }

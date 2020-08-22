@@ -1,4 +1,4 @@
-import { GalCustomElement, IGalCustomElementDefinition, isNonEmptyString } from "./utilities";
+import { GalCustomElement, isNonEmptyString } from './utilities';
 
 export interface IRouteDefintion {
   customElementTag: string;
@@ -7,11 +7,9 @@ export interface IRouteDefintion {
 
 const html = '';
 
-export interface GalRouter extends IGalCustomElementDefinition {};
-
 @GalCustomElement({
   html,
-  tag: 'gal-router'
+  tag: 'gal-router',
 })
 export class GalRouter extends HTMLElement {
   private static readonly routeTagMap: Record<string, string> = {};
@@ -20,17 +18,17 @@ export class GalRouter extends HTMLElement {
   private static route() {
     const url = window.location.hash.slice(1) || '/';
     GalRouter.resolveRoute(url);
-  };
+  }
 
   public static registerRoutes(routeDefinitions: IRouteDefintion[]) {
-    routeDefinitions.forEach(rd => {
+    routeDefinitions.forEach((rd) => {
       GalRouter.routeTagMap[rd.url] = rd.customElementTag.toLowerCase();
     });
 
     window.addEventListener('load', GalRouter.route);
     window.addEventListener('hashchange', GalRouter.route);
   }
-  
+
   public static resolveRoute = (route: string) => {
     if (!GalRouter.routeElement) {
       throw new Error('No router component found.');
@@ -43,11 +41,13 @@ export class GalRouter extends HTMLElement {
     }
 
     if (!customElements.get(tag)) {
-      throw new Error(`Route with name: ${route} found, but no matching custom element: ${tag}.`);
+      throw new Error(
+        `Route with name: ${route} found, but no matching custom element: ${tag}.`,
+      );
     }
 
     if (GalRouter.routeElement.shadowRoot) {
-      const customElementInstance = GalRouter.prototype.document.createElement(tag);
+      const customElementInstance = document.createElement(tag);
 
       GalRouter.routeElement.shadowRoot.innerHTML = '';
       GalRouter.routeElement.shadowRoot.appendChild(customElementInstance);
