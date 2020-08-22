@@ -1,5 +1,5 @@
 export function isNonEmptyString(value: unknown) {
-  return typeof value === 'string' && value;
+  return typeof value === 'string' && value.length > 0;
 }
 
 export function uuid() {
@@ -10,3 +10,19 @@ export function uuid() {
 }
 
 export const doNothing = () => {};
+
+export function toCamelCase(string: string, delineator: string) {
+  if (!isNonEmptyString(string)) {
+    return '';
+  }
+  
+  return string.split(delineator)
+               .map((word, i) => `${i > 0
+                  ? word[0].toUpperCase()
+                  : word[0].toLowerCase()}${word.substring(1, word.length)}`)
+               .join('');
+}
+
+export function kebabCaseToCamelCase(string: string) {
+  return toCamelCase(string, '-');
+}

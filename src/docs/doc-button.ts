@@ -59,11 +59,9 @@ const html = `
   tag: 'gal-doc-button'
 })
 export class GalDocButton extends HTMLElement {
-  public alertClickedSecondaryButton(event: Event) {
-    alert('Clicked the baby secondary button!');
-  }
+  public someText = 'Clicked the baby secondary button! ... (set on the class defintiion)';
 
-  constructor() {
-    super();
+  public alertClickedSecondaryButton(event: Event) {
+    alert(this.someText);
   }
 }

@@ -16,8 +16,4 @@ const html = `
   html,
   tag: 'gal-doc-intro'
 })
-export class GalDocIntro extends HTMLElement {
-  constructor() {
-    super();
-  }
-}
+export class GalDocIntro extends HTMLElement {}

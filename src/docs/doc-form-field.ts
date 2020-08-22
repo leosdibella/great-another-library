@@ -11,7 +11,7 @@ const html = `
   </h2>
   <div>
     <gal-form-field
-        fontSize="4rem">
+        font-size="1.5rem">
         <label
             slot="label">
             A Form field
@@ -39,8 +39,4 @@ const html = `
   html,
   tag: 'gal-doc-form-field'
 })
-export class GalDocFormField extends HTMLElement {
-  constructor() {
-    super();
-  }
-}
+export class GalDocFormField extends HTMLElement {}

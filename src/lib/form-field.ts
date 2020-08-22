@@ -68,13 +68,14 @@ enum Position {
     all = prefixed | suffixed
 }
 
-@GalCustomElement({
+@GalCustomElement<GalFormField>({
     styles,
     html,
     tag: 'gal-form-field',
-    observedAttributes: [
-        'fontSize'
-    ]
+    observedAttributes: {
+      'font-size': ''
+    },
+    observedAttributesMapName: 'attributeMap'
   })
   export class GalFormField extends HTMLElement {
     private static nextId = 0;
@@ -87,16 +88,8 @@ enum Position {
     #input?: HTMLInputElement;
     #suffix?: HTMLElement;
     #prefix?: HTMLElement;
-    #fontSize: string = '1.5rem';
+    #fontSize: string = '1rem';
     #formFieldContainer!: HTMLDivElement;
-
-    #attributes: Readonly<
-        Partial<Record<keyof GalFormField, (from: string, to: string) => void>>
-    > = {
-        fontSize: (from: string, to: string) => {
-            this.fontSize = to;
-        }
-    };
 
     #fontSizeMap: Readonly<Record<Position, (verticalPadding: number, horizontalPadding: number, fontSize: number) => void>> = {
         [Position.single]: doNothing,
@@ -145,6 +138,14 @@ enum Position {
         this.#fontSizeMap[position](verticalPadding, horizontalPadding, fontSizeInRem);
     }
 
+    public attributeMap: Readonly<
+        Partial<Record<keyof GalFormField, (from: string, to: string) => void>>
+    > = {
+        fontSize: (from: string, to: string) => {
+            this.fontSize = to;
+        }
+    };
+
     public get fontSize() {
         return this.#fontSize;
     }
@@ -155,18 +156,6 @@ enum Position {
             this.resizeFormField();
         }
     }
-
-    public attributeChangedCallback(name: keyof GalFormField, from: string, to: string) {
-        if (from === to) {
-          return;
-        }
-    
-        const attribute = this.#attributes[name];
-    
-        if (attribute) {
-          attribute(from, to);
-        }
-      }
 
     disconnectedCallback() {
         if (this.#input) {
@@ -196,9 +185,5 @@ enum Position {
         }
 
         this.resizeFormField();
-    }
-
-    constructor() {
-      super();
     }
   }

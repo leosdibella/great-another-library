@@ -57,8 +57,4 @@ export class GalRouter extends HTMLElement {
   public connectedCallback() {
     GalRouter.routeElement = this;
   }
-
-  constructor() {
-    super();
-  }
 }

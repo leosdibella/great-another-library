@@ -12,8 +12,6 @@ const html = `
 
 export type OverflowProperty = 'overflow' | 'overflowX' | 'overflowY';
 
-export type GalVirtualScrollAttribute = 'itemsId' | 'customElementId' | 'viewportHeight' | 'viewportWidth' | 'scrollDirection';
-
 export interface IGalVirtalScrollItem extends HTMLElement {
   galVirtualScrollItem: unknown;
 }
@@ -24,17 +22,18 @@ export enum GalVirtualScrollDirection {
   all = 'all'
 }
 
-@GalCustomElement<GalVirtualScrollAttribute>({
+@GalCustomElement<GalVirtualScroll>({
   html,
   styles,
   tag: 'gal-virtual-scroll',
-  observedAttributes: [
-    'itemsId', 
-    'customElementId',
-    'viewportHeight', 
-    'viewportWidth',
-    'scrollDirection'
-  ]
+  observedAttributes: {
+    'items-id': '', 
+    'custom-element-id': '',
+    'viewport-height': '', 
+    'viewport-width': '',
+    'scroll-direction': ''
+  },
+  observedAttributesMapName: 'attributesMap'
 })
 export class GalVirtualScroll extends HTMLElement {
   private static readonly _directionMap: Readonly<Record<GalVirtualScrollDirection, OverflowProperty>> = {
@@ -53,6 +52,21 @@ export class GalVirtualScroll extends HTMLElement {
 
   private readonly _onScroll = () => {
 
+  };
+
+  public attributesMap: Readonly<
+    Partial<Record<keyof GalVirtualScroll, (from: string, to: string) => void>>
+  > = {
+    itemsId: (from, to) => {
+    },
+    customElementId: (from, to) => {
+    },
+    viewportHeight: (from, to) => {
+    },
+    viewportWidth: (from, to) => {
+    },
+    scrollDirection: (from, to) => {
+    }
   };
 
   public set itemsId(itemsId: string) {
@@ -111,18 +125,6 @@ export class GalVirtualScroll extends HTMLElement {
 
   public get viewportWidth() {
     return this.#viewportWidth;
-  }
-
-  public attributeChangedCallback(name: GalVirtualScrollAttribute & keyof GalVirtualScroll, from: string, to: string) {
-    if (from === to) {
-      return;
-    }
-
-    (this[name] as string) = to;
-  }
-
-  constructor() {
-    super();
   }
 
   public connectedCallback() {

@@ -1,18 +1,20 @@
-import { isNonEmptyString } from "./utilities";
+import { isNonEmptyString, kebabCaseToCamelCase } from "./utilities";
 
-interface IGalCustomElement<T = unknown> {
+interface IGalCustomElement<T> {
   tag: string;
   document?: Document;
   html: string;
   styles?: string;
-  observedAttributes?: T[];
+  observedAttributes?: Record<string, keyof T | ''>;
+  observedAttributesMapName?: keyof T;
 }
 
-interface IGalExtendedCustomElement<T = unknown> {
+interface IGalExtendedCustomElement<T> {
   document?: Document;
   is: string;
   extends: string;
-  observedAttributes?: T[];
+  observedAttributes?: Record<string, keyof T | ''>;
+  observedAttributesMapName?: keyof T;
 }
 
 interface IGalEvent {
@@ -44,6 +46,28 @@ function htmlCollectionToArray(htmlCollection: HTMLCollection) {
   return Object.keys(htmlCollection)
                .map(k => htmlCollection.item(+k))
                .filter(e => e instanceof Element) as Element[];
+}
+
+function getObservedAttributes<T>(preObservedAttributesMap?: Record<string, keyof T | ''>) {
+  const observedAttributes: string[] = [];
+  const observedAttributesMap: Record<string, keyof T> = {};
+
+  if (preObservedAttributesMap) {
+    const keys = Object.keys(preObservedAttributesMap);
+
+    for (let i = 0; i < keys.length; ++i) {
+      const key = keys[i];
+      const attributeName = (preObservedAttributesMap[key] || kebabCaseToCamelCase(key)) as keyof T;
+
+      observedAttributes.push(key);
+      observedAttributesMap[key] = attributeName;
+    }  
+  }
+
+  return {
+    observedAttributes,
+    observedAttributesMap
+  };
 }
 
 function parseGalHtml(html: string): IGalParsedHtml | undefined {
@@ -102,9 +126,13 @@ export interface IGalCustomElementDefinition {
 
 export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
   return function<S extends CustomElementConstructor>(customElement: S) {
-    const defaultObservedAttributes: T[] = [];
     const defaultDocument: Document = galCustomElement.document || document;
     const template = defaultDocument.createElement('template');
+
+    const {
+      observedAttributes,
+      observedAttributesMap
+    } = getObservedAttributes<T>(galCustomElement.observedAttributes);
 
     if (!isNonEmptyString(galCustomElement.tag)) {
       throw new Error('GalCustomElement constructor error: tag cannot be empty!');
@@ -127,7 +155,7 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
 
     const galCustomElementDefintion = class GalCustomElementDefinition extends customElement {
       public static get observedAttributes() {
-        return galCustomElement.observedAttributes || defaultObservedAttributes;
+        return observedAttributes;
       }
       
       public get document() {
@@ -140,6 +168,28 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
 
       public static get tag() {
         return galCustomElement.tag;
+      }
+
+      public attributeChangedCallback(name: string, from: string, to: string) {
+        if (!galCustomElement.observedAttributesMapName) {
+          throw new Error('GalCustomElement attributeChangedCallback error: no observed attributes handler map name detected!');
+        }
+
+        if (from === to) {
+          return;
+        }
+
+        const attributesMap = this[galCustomElement.observedAttributesMapName as keyof this];
+
+        if (typeof attributesMap !== 'object' || attributesMap === null) {
+          throw new Error('GalCustomElement attributeChangedCallback error: no observed attributes handler map object detected!');
+        }
+    
+        const attributeChangeHandler = (attributesMap as Partial<Record<keyof T, (from: string, to: string) => void>>)[observedAttributesMap[name]];
+    
+        if (attributeChangeHandler) {
+          attributeChangeHandler(from, to);
+        }
       }
     
       constructor(...args: any[]) {
@@ -175,16 +225,42 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
 
 export function GalExtendedCustomElement<T>(galExtendedCustomElement: IGalExtendedCustomElement<T>) {
   return function<S extends CustomElementConstructor>(customElement: S) {
-    const defaultObservedAttributes: T[] = [];
     const defaultDocument: Document = galExtendedCustomElement.document || document;
+    
+    const {
+      observedAttributes,
+      observedAttributesMap
+    } = getObservedAttributes<T>(galExtendedCustomElement.observedAttributes);
 
     const galExtendedCustomElementDefintion = class GalExtendedCustomElementDefintion extends customElement {
       public static get observedAttributes() {
-        return galExtendedCustomElement.observedAttributes || defaultObservedAttributes;
+        return observedAttributes;
       }
 
       public static get document() {
         return defaultDocument;
+      }
+
+      public attributeChangedCallback(name: string, from: string, to: string) {
+        if (!galExtendedCustomElement.observedAttributesMapName) {
+          throw new Error('GalExtendedCustomElement attributeChangedCallback error: no observed attributes handler map name detected!');
+        }
+
+        if (from === to) {
+          return;
+        }
+
+        const attributesMap = this[galExtendedCustomElement.observedAttributesMapName as keyof this];
+
+        if (typeof attributesMap !== 'object' || attributesMap === null) {
+          throw new Error('GalExtendedCustomElement attributeChangedCallback error: no observed attributes handler map object detected!');
+        }
+    
+        const attributeChangeHandler = (attributesMap as Partial<Record<keyof T, (from: string, to: string) => void>>)[observedAttributesMap[name]];
+    
+        if (attributeChangeHandler) {
+          attributeChangeHandler(from, to);
+        }
       }
 
       constructor(...args: any[]) {

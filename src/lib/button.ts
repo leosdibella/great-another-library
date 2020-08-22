@@ -18,21 +18,20 @@ export enum ButtonColor {
   success = 'success'
 }
 
-export type GalButtonAttribute = 'color' | 'size';
-
-@GalExtendedCustomElement<GalButtonAttribute>({
+@GalExtendedCustomElement<GalButton>({
   is: 'gal-button',
   extends: 'button',
-  observedAttributes: [
-    'color',
-    'size'
-  ]
+  observedAttributes: {
+    color: '',
+    size: ''
+  },
+  observedAttributesMapName: 'attributesMap'
 })
 export class GalButton extends HTMLButtonElement {
   #color: ButtonColor = ButtonColor.primary;
   #size: ButtonSize = ButtonSize.medium;
 
-  #attributes: Readonly<
+  public attributesMap: Readonly<
     Partial<Record<keyof GalButton, (from: string, to: string) => void>>
   > = {
     color: (from, to: ButtonColor) => {
@@ -75,21 +74,5 @@ export class GalButton extends HTMLButtonElement {
     if (!this.#size) {
       this.size = ButtonSize.medium;
     }
-  }
-
-  public attributeChangedCallback(name: keyof GalButton, from: string, to: string) {
-    if (from === to) {
-      return;
-    }
-
-    const attribute = this.#attributes[name];
-
-    if (attribute) {
-      attribute(from, to);
-    }
-  }
-
-  constructor() {
-    super();
   }
 }
