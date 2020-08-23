@@ -1,62 +1,93 @@
 import { GalCustomElement, doNothing } from './utilities';
+import { ThemeVariables } from './utilities/theme';
+
+enum Selectors {
+  controlContainer = 'gal-form-field-control-container',
+  controlContainerFocused = 'gal-form-field-control-container-focused',
+  requiredLabel = 'gal-form-field-required-label',
+  labelContainer = 'gal-form-field-label-container',
+  descriptionContainer = 'gal-form-field-description-container',
+  messagesContainer = 'gal-form-field-messages-container',
+}
 
 const styles = `
 <style>
   :host {
-
+    margin-bottom: 1rem;
+    display: block;
   }
 
-  ::slotted(label) {
+  ::slotted([slot="label"]) {
     font-weight: bold;
   }
 
-  ::slotted(input) {
+  .${Selectors.labelContainer}:not(:empty) {
+    margin-bottom: 0.5rem;
+  }
+
+  .${Selectors.descriptionContainer}:not(:empty) {
+    margin-top: 0.5rem;
+  }
+
+  ::slotted([slot="label"]).${Selectors.requiredLabel}::after {
+    content: "*";
+  }
+
+  ::slotted([slot="control"]) {
     border: none;
     background-color: transparent;
     border-radius: 0;
     flex: 1 0 auto;
+    padding: 0;
   }
 
-  ::slotted(input:focus) {
+  ::slotted([slot="control"]:focus) {
     outline: none;
   }
 
-  ::slotted(i) {
-    background-color: transparent;
-  }
-
-  .gal-form-field-container {
-    border: 0.0125rem solid #000000;
-    border-radius: 0.025rem;
+  .${Selectors.controlContainer} {
+    border: 0.0125rem solid var(${ThemeVariables.foreground});
+    border-radius: 0.125rem;
     display: flex;
     flex-direction: row;
     align-items: center;
   }
 
-  .gal-form-field-container-focused {
-    outline: 0.0125rem solid #000000;
+  .${Selectors.controlContainerFocused} {
+    outline: 0.0125rem solid var(${ThemeVariables.foreground});
   }
 </style>
 `;
 
 const html = `
-<slot name="label">
-</slot>
 <div
-  class="gal-form-field-container">
-  <slot name="prefix">
-  </slot>
-  <slot name="input">
-  </slot>
-  <slot name="suffix">
+  class="${Selectors.labelContainer}">
+  <slot
+    name="label">
   </slot>
 </div>
-<div>
-  <slot name="description">
+<div
+  class="${Selectors.controlContainer}">
+  <slot
+    name="prefix">
+  </slot>
+  <slot 
+    name="control">
+  </slot>
+  <slot
+    name="suffix">
   </slot>
 </div>
-<div>
-  <slot name="message">
+<div
+  class="${Selectors.descriptionContainer}">
+  <slot
+    name="description">
+  </slot>
+</div>
+<div
+  class="${Selectors.messagesContainer}">
+  <slot
+    name="message">
   </slot>
 </div>
 `;
@@ -66,6 +97,11 @@ enum Position {
   prefixed = 1 << 0,
   suffixed = 1 << 1,
   all = prefixed | suffixed,
+}
+
+export interface GalFormFieldControl extends HTMLElement {
+  required: boolean;
+  readonly: boolean;
 }
 
 @GalCustomElement<GalFormField>({
@@ -80,12 +116,12 @@ enum Position {
 export class GalFormField extends HTMLElement {
   private static nextId = 0;
   private static readonly remToPixels = 16;
-  private static readonly verticalPaddingModifier = 0.5;
-  private static readonly horizontalPaddingModifier = 0.75;
+  private static readonly verticalMarginModifier = 0.5;
+  private static readonly horizontalMarginModifier = 0.75;
 
   #nextId = ++GalFormField.nextId;
   #label?: HTMLLabelElement;
-  #input?: HTMLInputElement;
+  #control?: GalFormFieldControl;
   #suffix?: HTMLElement;
   #prefix?: HTMLElement;
   #fontSize: string = '1rem';
@@ -95,54 +131,54 @@ export class GalFormField extends HTMLElement {
     Record<
       Position,
       (
-        verticalPadding: number,
-        horizontalPadding: number,
+        verticalMargin: number,
+        horizontalMargin: number,
         fontSize: number,
       ) => void
     >
   > = {
     [Position.single]: doNothing,
     [Position.prefixed]: (
-      verticalPadding: number,
-      horizontalPadding: number,
+      verticalMargin: number,
+      horizontalMargin: number,
       fontSize: number,
     ) => {
-      this.#prefix!.style.padding = `${verticalPadding}rem 0 ${verticalPadding}rem ${horizontalPadding}rem`;
+      this.#prefix!.style.margin = `${verticalMargin}rem 0 ${verticalMargin}rem ${horizontalMargin}rem`;
       this.#prefix!.style.fontSize = `${fontSize}rem`;
     },
     [Position.suffixed]: (
-      verticalPadding: number,
-      horizontalPadding: number,
+      verticalMargin: number,
+      horizontalMargin: number,
       fontSize: number,
     ) => {
-      this.#suffix!.style.padding = `${verticalPadding}rem ${horizontalPadding}rem ${verticalPadding}rem 0`;
+      this.#suffix!.style.margin = `${verticalMargin}rem ${horizontalMargin}rem ${verticalMargin}rem 0`;
       this.#suffix!.style.fontSize = `${fontSize}rem`;
     },
     [Position.all]: (
-      verticalPadding: number,
-      horizontalPadding: number,
+      verticalMargin: number,
+      horizontalMargin: number,
       fontSize: number,
     ) => {
       this.#fontSizeMap[Position.prefixed](
-        verticalPadding,
-        horizontalPadding,
+        verticalMargin,
+        horizontalMargin,
         fontSize,
       );
       this.#fontSizeMap[Position.suffixed](
-        verticalPadding,
-        horizontalPadding,
+        verticalMargin,
+        horizontalMargin,
         fontSize,
       );
     },
   };
 
   #focus = () => {
-    this.#formFieldContainer.classList.add('gal-form-field-container-focused');
+    this.#formFieldContainer.classList.add(Selectors.controlContainerFocused);
   };
 
   #blur = () => {
     this.#formFieldContainer.classList.remove(
-      'gal-form-field-container-focused',
+      Selectors.controlContainerFocused,
     );
   };
 
@@ -151,10 +187,9 @@ export class GalFormField extends HTMLElement {
       (parseFloat(getComputedStyle(document.body).fontSize) /
         GalFormField.remToPixels) *
       parseFloat(this.#fontSize);
-    const verticalPadding =
-      fontSizeInRem * GalFormField.verticalPaddingModifier;
-    const horizontalPadding =
-      fontSizeInRem * GalFormField.horizontalPaddingModifier;
+    const verticalMargin = fontSizeInRem * GalFormField.verticalMarginModifier;
+    const horizontalMargin =
+      fontSizeInRem * GalFormField.horizontalMarginModifier;
 
     let position: Position = Position.single;
 
@@ -166,14 +201,14 @@ export class GalFormField extends HTMLElement {
       position |= Position.suffixed;
     }
 
-    if (this.#input) {
-      this.#input.style.padding = `${verticalPadding}rem ${horizontalPadding}rem`;
-      this.#input.style.fontSize = `${fontSizeInRem}rem`;
+    if (this.#control) {
+      this.#control.style.margin = `${verticalMargin}rem ${horizontalMargin}rem`;
+      this.#control.style.fontSize = `${fontSizeInRem}rem`;
     }
 
     this.#fontSizeMap[position](
-      verticalPadding,
-      horizontalPadding,
+      verticalMargin,
+      horizontalMargin,
       fontSizeInRem,
     );
   }
@@ -198,36 +233,40 @@ export class GalFormField extends HTMLElement {
   }
 
   disconnectedCallback() {
-    if (this.#input) {
-      this.#input.removeEventListener('focus', this.#focus);
-      this.#input.removeEventListener('blur', this.#blur);
+    if (this.#control) {
+      this.#control.removeEventListener('focus', this.#focus);
+      this.#control.removeEventListener('blur', this.#blur);
     }
   }
 
   connectedCallback() {
     if (this.shadowRoot) {
       this.#formFieldContainer = this.shadowRoot.querySelector(
-        '.gal-form-field-container',
+        `.${Selectors.controlContainer}`,
       ) as HTMLDivElement;
     }
 
     this.#label =
       this.querySelector<HTMLLabelElement>('[slot="label"]') || undefined;
-    this.#input =
-      this.querySelector<HTMLInputElement>('[slot="input"]') || undefined;
+    this.#control =
+      this.querySelector<GalFormFieldControl>('[slot="control"]') || undefined;
     this.#prefix =
-      this.querySelector<HTMLInputElement>('[slot="prefix"]') || undefined;
+      this.querySelector<HTMLElement>('[slot="prefix"]') || undefined;
     this.#suffix =
-      this.querySelector<HTMLInputElement>('[slot="suffix"]') || undefined;
+      this.querySelector<HTMLElement>('[slot="suffix"]') || undefined;
 
     if (this.#label) {
-      this.#label.htmlFor = `gal-form-field-input-${this.#nextId}`;
+      this.#label.htmlFor = `gal-form-field-control-${this.#nextId}`;
     }
 
-    if (this.#input) {
-      this.#input.id = `gal-form-field-input-${this.#nextId}`;
-      this.#input.addEventListener('focus', this.#focus);
-      this.#input.addEventListener('blur', this.#blur);
+    if (this.#control) {
+      this.#control.id = `gal-form-field-control-${this.#nextId}`;
+      this.#control.addEventListener('focus', this.#focus);
+      this.#control.addEventListener('blur', this.#blur);
+
+      if (this.#control.required && this.#label) {
+        this.#label.classList.add(Selectors.requiredLabel);
+      }
     }
 
     this.resizeFormField();
