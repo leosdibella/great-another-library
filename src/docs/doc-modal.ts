@@ -6,14 +6,14 @@ const styles = `
 `;
 
 const html = `
-  <h2>
-    Modal Documentation
-  </h2>
+  <h1>
+    Modal
+  </h1>
 `;
 
 @GalCustomElement({
   styles,
   html,
-  tag: 'gal-doc-modal'
+  tag: 'gal-doc-modal',
 })
 export class GalDocModal extends HTMLElement {}

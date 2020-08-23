@@ -6,9 +6,9 @@ const styles = `
 `;
 
 const html = `
-<h2>
+<h1>
   Form Field
-</h2>
+</h1>
 <div>
   <gal-form-field
     font-size="1.5rem">

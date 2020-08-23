@@ -1,11 +1,11 @@
-import { GalExtendedCustomElement } from "./utilities";
+import { GalExtendedCustomElement } from './utilities';
 
 export enum ButtonSize {
   verySmall = 'very-small',
   small = 'small',
   medium = 'medium',
   large = 'large',
-  extraLarge = 'extra-large'
+  extraLarge = 'extra-large',
 }
 
 export enum ButtonColor {
@@ -15,48 +15,37 @@ export enum ButtonColor {
   info = 'info',
   warning = 'warning',
   error = 'error',
-  success = 'success'
+  success = 'success',
 }
 
 @GalExtendedCustomElement<GalButton>({
   is: 'gal-button',
   extends: 'button',
-  observedAttributes: {
-    color: '',
-    size: ''
-  },
-  observedAttributesMapName: 'attributesMap'
+  observedAttributes: ['color', 'size'],
 })
 export class GalButton extends HTMLButtonElement {
   #color: ButtonColor = ButtonColor.primary;
   #size: ButtonSize = ButtonSize.medium;
 
-  public attributesMap: Readonly<
-    Partial<Record<keyof GalButton, (from: string, to: string) => void>>
-  > = {
-    color: (from, to: ButtonColor) => {
-      if (Object.values(ButtonColor).indexOf(to) > -1) {
-        this.color = to;
-      }
-    },
-    size: (from, to: ButtonSize) => {
-      if (Object.values(ButtonSize).indexOf(to) > -1) {
-        this.size = to;
-      }
-    }
-  };
-
   public set color(color) {
+    if (Object.values(ButtonColor).indexOf(color) === -1) {
+      return;
+    }
+
     this.classList.remove(`gal-${this.#color}-background-color`);
     this.#color = color;
     this.classList.add(`gal-${this.#color}-background-color`);
   }
-  
+
   public get color() {
     return this.#color;
   }
 
   public set size(size) {
+    if (Object.values(ButtonSize).indexOf(size) > -1) {
+      return;
+    }
+
     this.classList.remove(`gal-button-${this.#size}`);
     this.#size = size;
     this.classList.add(`gal-button-${this.#size}`);

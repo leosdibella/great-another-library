@@ -12,9 +12,9 @@ const styles = `
 
 const html = `
 <main>
-  <h2>
-    Button Documentation
-  </h2>
+  <h1>
+    Button
+  </h1>
   <div
     class="gal-flex-col gal-doc-buttons">
     <button 
@@ -24,7 +24,7 @@ const html = `
       Oh Look a big 'ole primary button
     </button>
     <button
-      gal-on_click="alertClickedSecondaryButton"
+      gal-on:click="alertClickedSecondaryButton"
       is="gal-button"
       color="secondary"
       size="small">
@@ -56,10 +56,11 @@ const html = `
 @GalCustomElement({
   styles,
   html,
-  tag: 'gal-doc-button'
+  tag: 'gal-doc-button',
 })
 export class GalDocButton extends HTMLElement {
-  public someText = 'Clicked the baby secondary button! ... (set on the class defintiion)';
+  public someText =
+    'Clicked the baby secondary button! ... (set on the class defintiion)';
 
   public alertClickedSecondaryButton(event: Event) {
     alert(this.someText);

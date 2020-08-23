@@ -1,34 +1,28 @@
-import { isNonEmptyString, kebabCaseToCamelCase } from './utilities';
+import { isNonEmptyString, camelCaseToKebabCase } from './utilities';
 import { IGalParsedHtml, parseGalHtml } from './gal-parser';
 
 export interface IGalCustomElement<T> {
   tag: string;
   html: string;
   styles?: string;
-  observedAttributes?: Record<string, keyof T | ''>;
-  observedAttributesMapName?: keyof T;
+  observedAttributes?: (keyof T)[];
 }
 
 export interface IGalExtendedCustomElement<T> {
   is: string;
   extends: string;
-  observedAttributes?: Record<string, keyof T | ''>;
-  observedAttributesMapName?: keyof T;
+  observedAttributes?: (keyof T)[];
 }
 
-function getObservedAttributes<T>(
-  preObservedAttributesMap: Record<string, keyof T | ''>,
-) {
-  const observedAttributes: string[] = Object.keys(preObservedAttributesMap);
+function getObservedAttributes<T>(preObservedAttributes: (keyof T)[]) {
+  const observedAttributes: string[] = preObservedAttributes.map((tProperty) =>
+    camelCaseToKebabCase(tProperty as string),
+  );
   const observedAttributesMap: Record<string, keyof T> = {};
 
-  for (let i = 0; i < observedAttributes.length; ++i) {
-    const attribute = observedAttributes[i];
-    const classProperty = (preObservedAttributesMap[attribute] ||
-      kebabCaseToCamelCase(attribute)) as keyof T;
-
-    observedAttributesMap[attribute] = classProperty;
-  }
+  observedAttributes.forEach((oa, i) => {
+    observedAttributesMap[oa] = preObservedAttributes[i];
+  });
 
   return {
     observedAttributes,
@@ -42,7 +36,7 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
 
     const { observedAttributes, observedAttributesMap } = getObservedAttributes<
       T
-    >(galCustomElement.observedAttributes || {});
+    >(galCustomElement.observedAttributes || []);
 
     if (!isNonEmptyString(galCustomElement.tag)) {
       throw new Error(
@@ -67,6 +61,7 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
     }
 
     template.setAttribute('id', templateId);
+
     template.innerHTML = `${galCustomElement.styles || ''}${
       parsedHtml.template
     }`;
@@ -81,33 +76,13 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
       }
 
       public attributeChangedCallback(name: string, from: string, to: string) {
-        if (!galCustomElement.observedAttributesMapName) {
-          throw new Error(
-            'GalCustomElement attributeChangedCallback error: no observed attributes handler map name detected!',
-          );
-        }
-
         if (from === to) {
           return;
         }
 
-        const attributesMap = this[
-          galCustomElement.observedAttributesMapName as keyof this
-        ];
-
-        if (typeof attributesMap !== 'object' || attributesMap === null) {
-          throw new Error(
-            'GalCustomElement attributeChangedCallback error: no observed attributes handler map object detected!',
-          );
-        }
-
-        const attributeChangeHandler = (attributesMap as Partial<
-          Record<keyof T, (from: string, to: string) => void>
-        >)[observedAttributesMap[name]];
-
-        if (attributeChangeHandler) {
-          attributeChangeHandler(from, to);
-        }
+        ((this[
+          observedAttributesMap[name] as keyof this
+        ] as unknown) as string) = to;
       }
 
       constructor(...args: any[]) {
@@ -128,7 +103,7 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
           }
 
           const eventBoundElement = this.shadowRoot.querySelectorAll(
-            events[i].querySelector,
+            events[i].querySelector.replace(/\:/g, '\\:'),
           )[events[i].querySelectorIndex];
 
           if (!eventBoundElement) {
@@ -156,7 +131,7 @@ export function GalExtendedCustomElement<T>(
   return function <S extends CustomElementConstructor>(customElement: S) {
     const { observedAttributes, observedAttributesMap } = getObservedAttributes<
       T
-    >(galExtendedCustomElement.observedAttributes || {});
+    >(galExtendedCustomElement.observedAttributes || []);
 
     const galExtendedCustomElementDefintion = class GalExtendedCustomElementDefintion extends customElement {
       public static get observedAttributes() {
@@ -164,32 +139,14 @@ export function GalExtendedCustomElement<T>(
       }
 
       public attributeChangedCallback(name: string, from: string, to: string) {
-        if (!galExtendedCustomElement.observedAttributesMapName) {
-          throw new Error(
-            'GalExtendedCustomElement attributeChangedCallback error: no observed attributes handler map name detected!',
-          );
-        }
-
         if (from === to) {
           return;
         }
 
-        const attributesMap = this[
-          galExtendedCustomElement.observedAttributesMapName as keyof this
-        ];
-
-        if (typeof attributesMap !== 'object' || attributesMap === null) {
-          throw new Error(
-            'GalExtendedCustomElement attributeChangedCallback error: no observed attributes handler map object detected!',
-          );
-        }
-
-        const attributeChangeHandler = (attributesMap as Partial<
-          Record<keyof T, (from: string, to: string) => void>
-        >)[observedAttributesMap[name]];
-
-        if (attributeChangeHandler) {
-          attributeChangeHandler(from, to);
+        if (this[observedAttributesMap[name] as keyof this]) {
+          ((this[
+            observedAttributesMap[name] as keyof this
+          ] as unknown) as string) = to;
         }
       }
 

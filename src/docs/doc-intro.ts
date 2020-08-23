@@ -6,14 +6,14 @@ const styles = `
 `;
 
 const html = `
-  <h2>
+  <h1>
     This is an introduction to this library, I promise I'll make it more interesting ...
-  </h2>
+  </h1>
 `;
 
 @GalCustomElement({
   styles,
   html,
-  tag: 'gal-doc-intro'
+  tag: 'gal-doc-intro',
 })
 export class GalDocIntro extends HTMLElement {}

@@ -1,4 +1,4 @@
-import { GalCustomElement } from "./utilities";
+import { GalCustomElement } from './utilities';
 
 const styles = `
 <style>
@@ -19,28 +19,29 @@ export interface IGalVirtalScrollItem extends HTMLElement {
 export enum GalVirtualScrollDirection {
   vertical = 'vertical',
   horizontal = 'horizontal',
-  all = 'all'
+  all = 'all',
 }
 
 @GalCustomElement<GalVirtualScroll>({
   html,
   styles,
   tag: 'gal-virtual-scroll',
-  observedAttributes: {
-    'items-id': '', 
-    'custom-element-id': '',
-    'viewport-height': '', 
-    'viewport-width': '',
-    'scroll-direction': ''
-  },
-  observedAttributesMapName: 'attributesMap'
+  observedAttributes: [
+    'itemsId',
+    'customElementId',
+    'viewportHeight',
+    'viewportWidth',
+    'scrollDirection',
+  ],
 })
 export class GalVirtualScroll extends HTMLElement {
-  private static readonly _directionMap: Readonly<Record<GalVirtualScrollDirection, OverflowProperty>> = {
+  private static readonly _directionMap: Readonly<
+    Record<GalVirtualScrollDirection, OverflowProperty>
+  > = {
     [GalVirtualScrollDirection.vertical]: 'overflowY',
     [GalVirtualScrollDirection.horizontal]: 'overflowX',
-    [GalVirtualScrollDirection.all]: 'overflow'
-  }
+    [GalVirtualScrollDirection.all]: 'overflow',
+  };
 
   #itemsId: string = '';
   #customElementId: string = '';
@@ -48,61 +49,39 @@ export class GalVirtualScroll extends HTMLElement {
   #customElement?: IGalVirtalScrollItem;
   #viewportHeight: string = '100%';
   #viewportWidth: string = '100%';
-  #scrollDirection:  GalVirtualScrollDirection = GalVirtualScrollDirection.vertical;
+  #scrollDirection: GalVirtualScrollDirection = GalVirtualScrollDirection.vertical;
 
-  private readonly _onScroll = () => {
+  private readonly _onScroll = () => {};
 
-  };
-
-  public attributesMap: Readonly<
-    Partial<Record<keyof GalVirtualScroll, (from: string, to: string) => void>>
-  > = {
-    itemsId: (from, to) => {
-    },
-    customElementId: (from, to) => {
-    },
-    viewportHeight: (from, to) => {
-    },
-    viewportWidth: (from, to) => {
-    },
-    scrollDirection: (from, to) => {
-    }
-  };
-
-  public set itemsId(itemsId: string) {
-    
-  }
+  public set itemsId(itemsId: string) {}
 
   public get itemsId() {
     return this.#itemsId;
   }
 
-  public set items(items: unknown[]) {
-    
-  }
+  public set items(items: unknown[]) {}
 
   public get items() {
     return this.#items;
   }
 
-  public set customElementId(customElementId: string) {
-
-  }
+  public set customElementId(customElementId: string) {}
 
   public get customElementId() {
     return this.#customElementId;
   }
 
-  public set customElement(customElement: IGalVirtalScrollItem | undefined) {
-  
-  }
+  public set customElement(customElement: IGalVirtalScrollItem | undefined) {}
 
   public get customElement() {
     return this.#customElement;
   }
 
   public set scrollDirection(scrollDirection: GalVirtualScrollDirection) {
-    this.#scrollDirection = Object.keys(GalVirtualScrollDirection).indexOf(scrollDirection) > -1 ? scrollDirection : GalVirtualScrollDirection.vertical;
+    this.#scrollDirection =
+      Object.keys(GalVirtualScrollDirection).indexOf(scrollDirection) > -1
+        ? scrollDirection
+        : GalVirtualScrollDirection.vertical;
 
     this.style[GalVirtualScroll._directionMap[this.#scrollDirection]] = 'auto';
   }

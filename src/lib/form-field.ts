@@ -1,5 +1,6 @@
 import { GalCustomElement, doNothing } from './utilities';
 import { ThemeVariables } from './utilities/theme';
+import { GalFormFieldControl } from './utilities/form-field-control';
 
 enum Selectors {
   controlContainer = 'gal-form-field-control-container',
@@ -99,19 +100,11 @@ enum Position {
   all = prefixed | suffixed,
 }
 
-export interface GalFormFieldControl extends HTMLElement {
-  required: boolean;
-  readonly: boolean;
-}
-
 @GalCustomElement<GalFormField>({
   styles,
   html,
   tag: 'gal-form-field',
-  observedAttributes: {
-    'font-size': '',
-  },
-  observedAttributesMapName: 'attributeMap',
+  observedAttributes: ['fontSize'],
 })
 export class GalFormField extends HTMLElement {
   private static nextId = 0;
@@ -172,14 +165,20 @@ export class GalFormField extends HTMLElement {
     },
   };
 
-  #focus = () => {
+  #onFocus = () => {
     this.#formFieldContainer.classList.add(Selectors.controlContainerFocused);
   };
 
-  #blur = () => {
+  #onBlur = () => {
     this.#formFieldContainer.classList.remove(
       Selectors.controlContainerFocused,
     );
+  };
+
+  #focus = () => {
+    if (this.#control) {
+      this.#control.focus();
+    }
   };
 
   private resizeFormField() {
@@ -213,14 +212,6 @@ export class GalFormField extends HTMLElement {
     );
   }
 
-  public attributeMap: Readonly<
-    Partial<Record<keyof GalFormField, (from: string, to: string) => void>>
-  > = {
-    fontSize: (from: string, to: string) => {
-      this.fontSize = to;
-    },
-  };
-
   public get fontSize() {
     return this.#fontSize;
   }
@@ -234,8 +225,12 @@ export class GalFormField extends HTMLElement {
 
   disconnectedCallback() {
     if (this.#control) {
-      this.#control.removeEventListener('focus', this.#focus);
-      this.#control.removeEventListener('blur', this.#blur);
+      this.#control.removeEventListener('focus', this.#onFocus);
+      this.#control.removeEventListener('blur', this.#onBlur);
+    }
+
+    if (this.#label) {
+      this.#label.removeEventListener('click', this.#focus);
     }
   }
 
@@ -257,12 +252,13 @@ export class GalFormField extends HTMLElement {
 
     if (this.#label) {
       this.#label.htmlFor = `gal-form-field-control-${this.#nextId}`;
+      this.#label.addEventListener('click', this.#focus);
     }
 
     if (this.#control) {
       this.#control.id = `gal-form-field-control-${this.#nextId}`;
-      this.#control.addEventListener('focus', this.#focus);
-      this.#control.addEventListener('blur', this.#blur);
+      this.#control.addEventListener('focus', this.#onFocus);
+      this.#control.addEventListener('blur', this.#onBlur);
 
       if (this.#control.required && this.#label) {
         this.#label.classList.add(Selectors.requiredLabel);

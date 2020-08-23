@@ -6,3 +6,4 @@ export * from './doc-button';
 export * from './doc-modal';
 export * from './doc-intro';
 export * from './doc-form-field';
+export * from './doc-select';

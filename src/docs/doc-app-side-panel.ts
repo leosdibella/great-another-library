@@ -58,6 +58,10 @@ export class GalDocAppSidePanel extends HTMLElement {
       displayText: 'Form Field',
       href: '#/formField',
     },
+    {
+      displayText: 'Select',
+      href: '#/select',
+    },
   ];
 
   connectedCallback() {
