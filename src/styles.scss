@@ -10,30 +10,30 @@ $disabled: #cccccc;
 $color-map: (
   primary: $primary,
   secondary: $secondary,
-  accent: $accent
+  accent: $accent,
 );
 
 $button-size-map: (
   very-small: (
     font-size: 0.666rem,
-    padding: 0.25rem 0.5rem
+    padding: 0.333rem,
   ),
   small: (
     font-size: 0.75rem,
-    padding: 0.333rem 0.666rem
+    padding: 0.5rem,
   ),
   medium: (
     font-size: 1rem,
-    padding: 0.5rem 0.75rem
+    padding: 0.75rem 1rem,
   ),
   large: (
     font-size: 1.25rem,
-    padding: 0.666rem 1rem
+    padding: 1rem 1.5rem,
   ),
   extra-large: (
     font-size: 1.333rem,
-    padding: 0.75rem 1.333rem
-  )
+    padding: 1rem 1.666rem,
+  ),
 );
 
 :root {

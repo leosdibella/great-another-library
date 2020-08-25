@@ -1,23 +1,57 @@
-import { isNonEmptyString, camelCaseToKebabCase } from './utilities';
+import { isNonEmptyString, camelCaseToKebabCase, uuid } from './utilities';
 import { IGalParsedHtml, parseGalHtml } from './gal-parser';
+
+interface GalEventHistory {
+  eventName: string;
+  eventFunction(customEvent: CustomEvent<unknown>): void;
+}
+
+export const galEventPrefix = '_GalEvent_';
+
+export function generatePropertySetter<T, S = undefined>(
+  element: HTMLElement,
+  property: keyof T,
+  initialValue?: S,
+) {
+  const eventName = `${galEventPrefix}${uuid()}`;
+  const attribute = camelCaseToKebabCase(property as string);
+  element.setAttribute(attribute, eventName);
+
+  function setProperty(nextValue: S) {
+    element.dispatchEvent(
+      new CustomEvent(eventName, {
+        detail: nextValue,
+      }),
+    );
+  }
+
+  if (arguments.length === 3) {
+    setProperty(initialValue as S);
+  }
+
+  return setProperty;
+}
 
 export interface IGalCustomElement<T> {
   tag: string;
   html: string;
   styles?: string;
   observedAttributes?: (keyof T)[];
+  refireAttributeChanged?: boolean;
 }
 
 export interface IGalExtendedCustomElement<T> {
   is: string;
   extends: string;
   observedAttributes?: (keyof T)[];
+  refireAttributeChanged?: boolean;
 }
 
 function getObservedAttributes<T>(preObservedAttributes: (keyof T)[]) {
   const observedAttributes: string[] = preObservedAttributes.map((tProperty) =>
     camelCaseToKebabCase(tProperty as string),
   );
+
   const observedAttributesMap: Record<string, keyof T> = {};
 
   observedAttributes.forEach((oa, i) => {
@@ -75,14 +109,41 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
         return galCustomElement.tag;
       }
 
+      #eventListeners: Record<string, GalEventHistory | undefined> = {};
+
       public attributeChangedCallback(name: string, from: string, to: string) {
-        if (from === to) {
+        if (from === to && !galCustomElement.refireAttributeChanged) {
           return;
         }
 
-        ((this[
-          observedAttributesMap[name] as keyof this
-        ] as unknown) as string) = to;
+        const listener = this.#eventListeners[name];
+
+        if (to.indexOf(galEventPrefix) === 0) {
+          if (listener) {
+            this.removeEventListener(from, listener.eventFunction);
+            this.#eventListeners[name] = undefined;
+          }
+
+          this.#eventListeners[name] = {
+            eventName: to,
+            eventFunction: (event: CustomEvent<unknown>) => {
+              (this[
+                observedAttributesMap[name] as keyof this
+              ] as unknown) = event.detail;
+            },
+          };
+
+          this.addEventListener(to, this.#eventListeners[name]!.eventFunction);
+        } else {
+          if (listener) {
+            this.removeEventListener(from, listener.eventFunction);
+            this.#eventListeners[name] = undefined;
+          }
+
+          ((this[
+            observedAttributesMap[name] as keyof this
+          ] as unknown) as string) = to;
+        }
       }
 
       constructor(...args: any[]) {
@@ -91,6 +152,7 @@ export function GalCustomElement<T>(galCustomElement: IGalCustomElement<T>) {
         this.attachShadow({ mode: 'open' }).appendChild(
           template.content.cloneNode(true),
         );
+
         const events = (parsedHtml as IGalParsedHtml).events;
 
         for (let i = 0; i < events.length; ++i) {
@@ -138,12 +200,37 @@ export function GalExtendedCustomElement<T>(
         return observedAttributes;
       }
 
+      #eventListeners: Record<string, GalEventHistory | undefined> = {};
+
       public attributeChangedCallback(name: string, from: string, to: string) {
-        if (from === to) {
+        if (from === to && !galExtendedCustomElement.refireAttributeChanged) {
           return;
         }
 
-        if (this[observedAttributesMap[name] as keyof this]) {
+        const listener = this.#eventListeners[name];
+
+        if (to.indexOf(galEventPrefix) === 0) {
+          if (listener) {
+            this.removeEventListener(from, listener.eventFunction);
+            this.#eventListeners[name] = undefined;
+          }
+
+          this.#eventListeners[name] = {
+            eventName: to,
+            eventFunction: (event: CustomEvent<unknown>) => {
+              (this[
+                observedAttributesMap[name] as keyof this
+              ] as unknown) = event.detail;
+            },
+          };
+
+          this.addEventListener(to, this.#eventListeners[name]!.eventFunction);
+        } else {
+          if (listener) {
+            this.removeEventListener(from, listener.eventFunction);
+            this.#eventListeners[name] = undefined;
+          }
+
           ((this[
             observedAttributesMap[name] as keyof this
           ] as unknown) as string) = to;

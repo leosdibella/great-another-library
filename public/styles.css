@@ -124,7 +124,7 @@
   border-radius: 0.25rem;
   color: var(--gal-foreground-color);
   font-size: 0.666rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.333rem;
 }
 
 .gal-button-small {
@@ -132,7 +132,7 @@
   border-radius: 0.25rem;
   color: var(--gal-foreground-color);
   font-size: 0.75rem;
-  padding: 0.333rem 0.666rem;
+  padding: 0.5rem;
 }
 
 .gal-button-medium {
@@ -140,7 +140,7 @@
   border-radius: 0.25rem;
   color: var(--gal-foreground-color);
   font-size: 1rem;
-  padding: 0.5rem 0.75rem;
+  padding: 0.75rem 1rem;
 }
 
 .gal-button-large {
@@ -148,7 +148,7 @@
   border-radius: 0.25rem;
   color: var(--gal-foreground-color);
   font-size: 1.25rem;
-  padding: 0.666rem 1rem;
+  padding: 1rem 1.5rem;
 }
 
 .gal-button-extra-large {
@@ -156,5 +156,5 @@
   border-radius: 0.25rem;
   color: var(--gal-foreground-color);
   font-size: 1.333rem;
-  padding: 0.75rem 1.333rem;
+  padding: 1rem 1.666rem;
 }

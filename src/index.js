@@ -1,4 +1,11 @@
 import {
+  GalButton,
+  GalFormField,
+  GalSelect,
+  GalOption,
+  GalRouter,
+} from './lib';
+import {
   GalDocApp,
   GalDocAppHeader,
   GalDocAppMain,
@@ -9,13 +16,6 @@ import {
   GalDocFormField,
   GalDocSelect,
 } from './docs';
-import {
-  GalButton,
-  GalFormField,
-  GalSelect,
-  GalOption,
-  GalRouter,
-} from './lib';
 
 document.body.appendChild(new GalDocApp());
 

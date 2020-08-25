@@ -8,33 +8,13 @@ export function isWellDefined(value: unknown) {
 
 export function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
+    const r = (Math.random() * 16) | 0;
+
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
   });
 }
 
 export const doNothing = () => {};
-
-export function toCamelCase(string: string, delineator: string) {
-  if (!isNonEmptyString(string)) {
-    return '';
-  }
-
-  return string
-    .split(delineator)
-    .map(
-      (word, i) =>
-        `${
-          i > 0 ? word[0].toUpperCase() : word[0].toLowerCase()
-        }${word.substring(1, word.length)}`,
-    )
-    .join('');
-}
-
-export function kebabCaseToCamelCase(string: string) {
-  return toCamelCase(string, '-');
-}
 
 export function camelCaseToKebabCase(string: string) {
   if (!isNonEmptyString(string)) {
@@ -46,8 +26,7 @@ export function camelCaseToKebabCase(string: string) {
 
   for (let i = 0; i < string.length; ++i) {
     char = string[i].toLowerCase();
-    kebabCase += char !== string[i] ? '-' : '';
-    kebabCase += char;
+    kebabCase += (char !== string[i] ? '-' : '') + char;
   }
 
   return kebabCase;

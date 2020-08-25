@@ -24,11 +24,17 @@ export enum ButtonColor {
   observedAttributes: ['color', 'size'],
 })
 export class GalButton extends HTMLButtonElement {
+  public static colors = Object.keys(ButtonColor).map(
+    (color) => (ButtonColor as Record<string, ButtonColor>)[color],
+  );
+  public static sizes = Object.keys(ButtonSize).map(
+    (size) => (ButtonSize as Record<string, ButtonSize>)[size],
+  );
   #color: ButtonColor = ButtonColor.primary;
   #size: ButtonSize = ButtonSize.medium;
 
   public set color(color) {
-    if (Object.values(ButtonColor).indexOf(color) === -1) {
+    if (GalButton.colors.indexOf(color) === -1) {
       return;
     }
 
@@ -42,7 +48,7 @@ export class GalButton extends HTMLButtonElement {
   }
 
   public set size(size) {
-    if (Object.values(ButtonSize).indexOf(size) > -1) {
+    if (GalButton.sizes.indexOf(size) === -1) {
       return;
     }
 
