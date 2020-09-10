@@ -38,38 +38,34 @@ export interface INavigationOption {
 @GalCustomElement({
   styles,
   html,
-  tag: 'gal-doc-app-side-panel',
+  tag: 'gal-doc-app-side-panel'
 })
 export class GalDocAppSidePanel extends HTMLElement {
   private static readonly navigationOptions: Readonly<INavigationOption[]> = [
     {
       displayText: 'Home',
-      href: '#/',
+      href: '#/'
     },
     {
       displayText: 'Button',
-      href: '#/button',
+      href: '#/button'
     },
     {
       displayText: 'Modal',
-      href: '#/modal',
+      href: '#/modal'
     },
     {
       displayText: 'Form Field',
-      href: '#/formField',
+      href: '#/formField'
     },
     {
       displayText: 'Select',
-      href: '#/select',
-    },
+      href: '#/select'
+    }
   ];
 
   connectedCallback() {
-    if (!this.shadowRoot) {
-      return;
-    }
-
-    const navigationOptions = this.shadowRoot.querySelector('ul');
+    const navigationOptions = this.shadowRoot!.querySelector('ul');
 
     if (!navigationOptions) {
       return;

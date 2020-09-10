@@ -6,6 +6,14 @@ export function isWellDefined(value: unknown) {
   return value !== undefined && value !== null;
 }
 
+export function isObject(value: unknown) {
+  return typeof value === 'object' && value !== null;
+}
+
+export function isFunction(value: unknown) {
+  return typeof value === 'function';
+}
+
 export function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0;

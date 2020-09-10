@@ -1,4 +1,4 @@
-import { uuid } from "./utilities";
+import { uuid } from './utilities';
 
 export class Receiver<T, S = undefined, U extends string = string> {
   #respond?: (line: string, value: S) => void;
@@ -15,7 +15,7 @@ export class Receiver<T, S = undefined, U extends string = string> {
     if (this.#disconnect) {
       this.#disconnect();
     }
-    
+
     this.#respond = undefined;
     this.#disconnect = undefined;
     this.#value = undefined;
@@ -30,7 +30,8 @@ export class Receiver<T, S = undefined, U extends string = string> {
   constructor(
     respond: (line: string, value: S) => void,
     disconnect: () => void,
-    value: () => T) {
+    value: () => T
+  ) {
     this.#respond = respond;
     this.#disconnect = disconnect;
     this.#value = value;
@@ -38,7 +39,9 @@ export class Receiver<T, S = undefined, U extends string = string> {
 }
 
 export class Bridge<T, U extends string = string> {
-  private static readonly channels: Partial<Record<string, Bridge<unknown>>> = {};
+  private static readonly channels: Partial<
+    Record<string, Bridge<unknown>>
+  > = {};
 
   public static open<T, U extends string = string>(value: T) {
     const bridge = new Bridge<T, U>(value);
@@ -48,7 +51,10 @@ export class Bridge<T, U extends string = string> {
     return bridge;
   }
 
-  public static connect<T, S = undefined, U extends string = string>(channelId: string, listener?: (value: T) => void) {
+  public static connect<T, S = undefined, U extends string = string>(
+    channelId: string,
+    listener?: (value: T) => void
+  ) {
     const bridge = Bridge.channels[channelId] as Bridge<T, U> | undefined;
 
     if (bridge) {
@@ -56,29 +62,33 @@ export class Bridge<T, U extends string = string> {
         bridge.#listeners.push(listener);
       }
 
-      const receiver = new Receiver<T, S, U>((line: U, value: S) => {
-        const operator = bridge.#operators[line];
-  
-        if (operator) {
-          operator(value);
-        }
-      }, () => {
-        if (listener) {
-          const listenerIndex = bridge.#listeners.indexOf(listener);
-          
-          if (listenerIndex > -1) {
-            bridge.#listeners.splice(listenerIndex, 1);
+      const receiver = new Receiver<T, S, U>(
+        (line: U, value: S) => {
+          const operator = bridge.#operators[line];
+
+          if (operator) {
+            operator(value);
           }
-        }
+        },
+        () => {
+          if (listener) {
+            const listenerIndex = bridge.#listeners.indexOf(listener);
 
-        const receiverIndex = bridge.#receivers.indexOf(receiver);
+            if (listenerIndex > -1) {
+              bridge.#listeners.splice(listenerIndex, 1);
+            }
+          }
 
-        if (receiverIndex > -1) {
-          bridge.#receivers.splice(receiverIndex, 1);
+          const receiverIndex = bridge.#receivers.indexOf(receiver);
+
+          if (receiverIndex > -1) {
+            bridge.#receivers.splice(receiverIndex, 1);
+          }
+        },
+        () => {
+          return bridge.value;
         }
-      }, () => {
-        return bridge.value;
-      });
+      );
 
       bridge.#receivers.push(receiver);
 
@@ -98,7 +108,7 @@ export class Bridge<T, U extends string = string> {
     while (Bridge.channels[channelId] !== undefined) {
       channelId = uuid();
     }
-    
+
     return channelId;
   })();
 

@@ -1,5 +1,6 @@
 import { GalCustomElement, generatePropertySetter } from '../lib/utilities';
 import { GalButton, ButtonColor, ButtonSize } from 'src/lib';
+import { GalHostEvent } from 'src/lib/utilities/gal-host-event';
 
 const styles = `
 <style>
@@ -39,7 +40,7 @@ const html = `
 @GalCustomElement({
   styles,
   html,
-  tag: 'gal-doc-app-header',
+  tag: 'gal-doc-app-header'
 })
 export class GalDocAppHeader extends HTMLElement {
   #exampleButton!: HTMLButtonElement;
@@ -57,7 +58,7 @@ export class GalDocAppHeader extends HTMLElement {
 
     this.#timeoutId = window.setTimeout(
       this.setExampleButtonColor.bind(this),
-      randomNumber * 1000,
+      randomNumber * 1000
     );
   }
 
@@ -66,22 +67,25 @@ export class GalDocAppHeader extends HTMLElement {
   }
 
   public connectedCallback() {
-    if (this.shadowRoot) {
-      this.#exampleButton = this.shadowRoot.querySelector(
-        '.exmaple-button',
-      ) as HTMLButtonElement;
-    }
+    this.#exampleButton = this.shadowRoot!.querySelector(
+      '.exmaple-button'
+    ) as HTMLButtonElement;
 
     this.#colorSetter = generatePropertySetter<GalButton, ButtonColor>(
       this.#exampleButton,
-      'color',
+      'color'
     );
     this.#sizeSetter = generatePropertySetter<GalButton, ButtonSize>(
       this.#exampleButton,
-      'size',
+      'size'
     );
 
     this.setExampleButtonColor();
+  }
+
+  @GalHostEvent('click')
+  public onClick() {
+    alert('got clicked');
   }
 
   constructor() {

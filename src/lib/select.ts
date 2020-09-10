@@ -1,13 +1,10 @@
 import { GalCustomElement } from './utilities/gal-custom-element';
-import { attributeToBoolean } from './utilities';
-import {
-  GalFormFieldControl,
-  galFormFieldObservedAttributes,
-} from './utilities/form-field-control';
+import { attributeToBoolean, GalObserved } from './utilities';
 import { Aria } from './utilities/aria';
+import { GalFormFieldControl } from './utilities/form-field-control';
 
 enum Selectors {
-  listbox = 'gal-select-listbox',
+  listbox = 'gal-select-listbox'
 }
 
 const styles = `
@@ -35,14 +32,10 @@ const html = `
 </div>
 `;
 
-@GalCustomElement<GalSelect>({
+@GalCustomElement({
   html,
   styles,
-  tag: 'gal-select',
-  observedAttributes: [
-    'placeholder',
-    ...(galFormFieldObservedAttributes as (keyof GalSelect)[]),
-  ],
+  tag: 'gal-select'
 })
 export class GalSelect extends HTMLElement implements GalFormFieldControl {
   #value?: unknown;
@@ -55,6 +48,7 @@ export class GalSelect extends HTMLElement implements GalFormFieldControl {
   #placeholder: string = '';
   #placeholderElement?: HTMLElement;
 
+  @GalObserved()
   public set disabled(disabled: boolean) {
     this.#disabled = attributeToBoolean(disabled);
 
@@ -69,6 +63,7 @@ export class GalSelect extends HTMLElement implements GalFormFieldControl {
     return this.#disabled;
   }
 
+  @GalObserved()
   public set fontSize(fontSize: string) {
     this.#fontSize = fontSize;
   }
@@ -77,6 +72,7 @@ export class GalSelect extends HTMLElement implements GalFormFieldControl {
     return this.#fontSize;
   }
 
+  @GalObserved()
   public set required(required: boolean) {
     this.#required = attributeToBoolean(required);
     this.setAttribute(Aria.required, `${this.#required}`);
@@ -86,6 +82,7 @@ export class GalSelect extends HTMLElement implements GalFormFieldControl {
     return this.#required;
   }
 
+  @GalObserved()
   public set readonly(readonly: boolean) {
     this.#readonly = attributeToBoolean(readonly);
     this.setAttribute(Aria.readonly, `${this.#readonly}`);
@@ -95,6 +92,7 @@ export class GalSelect extends HTMLElement implements GalFormFieldControl {
     return this.#readonly;
   }
 
+  @GalObserved()
   public set multiple(multiple: boolean) {
     this.#multiple = attributeToBoolean(multiple);
     this.setAttribute(Aria.multiselectable, `${this.#multiple}`);
@@ -104,6 +102,7 @@ export class GalSelect extends HTMLElement implements GalFormFieldControl {
     return this.#multiple;
   }
 
+  @GalObserved()
   public set value(value: unknown) {
     this.#value = value;
   }
@@ -112,10 +111,11 @@ export class GalSelect extends HTMLElement implements GalFormFieldControl {
     return this.#value;
   }
 
+  @GalObserved()
   public set placeholder(placeholder: string) {
-    if (!this.#placeholderElement && this.shadowRoot) {
-      this.#placeholderElement = this.shadowRoot.querySelector(
-        'slot[name="placeholder"]',
+    if (!this.#placeholderElement) {
+      this.#placeholderElement = this.shadowRoot!.querySelector(
+        'slot[name="placeholder"]'
       ) as HTMLSlotElement;
     }
 
@@ -137,10 +137,8 @@ export class GalSelect extends HTMLElement implements GalFormFieldControl {
   }
 
   public connectedCallback() {
-    if (this.shadowRoot) {
-      this.#listbox = this.shadowRoot.querySelector(
-        `.${Selectors.listbox}`,
-      ) as HTMLDivElement;
-    }
+    this.#listbox = this.shadowRoot!.querySelector(
+      `.${Selectors.listbox}`
+    ) as HTMLDivElement;
   }
 }

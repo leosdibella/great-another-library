@@ -1,4 +1,4 @@
-import { GalCustomElement } from "../lib/utilities";
+import { GalCustomElement } from '../lib/utilities';
 
 const styles = `
 <style>
@@ -30,7 +30,6 @@ const html = `
   </gal-doc-app-main>
 </div>
 `;
-
 
 @GalCustomElement({
   styles,

@@ -1,4 +1,4 @@
-import { GalCustomElement, doNothing } from './utilities';
+import { GalCustomElement, doNothing, GalObserved } from './utilities';
 import { ThemeVariables } from './utilities/theme';
 import { GalFormFieldControl } from './utilities/form-field-control';
 
@@ -8,7 +8,7 @@ enum Selectors {
   requiredLabel = 'gal-form-field-required-label',
   labelContainer = 'gal-form-field-label-container',
   descriptionContainer = 'gal-form-field-description-container',
-  messagesContainer = 'gal-form-field-messages-container',
+  messagesContainer = 'gal-form-field-messages-container'
 }
 
 const styles = `
@@ -97,14 +97,13 @@ enum Position {
   single = 0,
   prefixed = 1 << 0,
   suffixed = 1 << 1,
-  all = prefixed | suffixed,
+  all = prefixed | suffixed
 }
 
-@GalCustomElement<GalFormField>({
+@GalCustomElement({
   styles,
   html,
-  tag: 'gal-form-field',
-  observedAttributes: ['fontSize'],
+  tag: 'gal-form-field'
 })
 export class GalFormField extends HTMLElement {
   private static nextId = 0;
@@ -126,7 +125,7 @@ export class GalFormField extends HTMLElement {
       (
         verticalMargin: number,
         horizontalMargin: number,
-        fontSize: number,
+        fontSize: number
       ) => void
     >
   > = {
@@ -134,7 +133,7 @@ export class GalFormField extends HTMLElement {
     [Position.prefixed]: (
       verticalMargin: number,
       horizontalMargin: number,
-      fontSize: number,
+      fontSize: number
     ) => {
       this.#prefix!.style.margin = `${verticalMargin}rem 0 ${verticalMargin}rem ${horizontalMargin}rem`;
       this.#prefix!.style.fontSize = `${fontSize}rem`;
@@ -142,7 +141,7 @@ export class GalFormField extends HTMLElement {
     [Position.suffixed]: (
       verticalMargin: number,
       horizontalMargin: number,
-      fontSize: number,
+      fontSize: number
     ) => {
       this.#suffix!.style.margin = `${verticalMargin}rem ${horizontalMargin}rem ${verticalMargin}rem 0`;
       this.#suffix!.style.fontSize = `${fontSize}rem`;
@@ -150,19 +149,19 @@ export class GalFormField extends HTMLElement {
     [Position.all]: (
       verticalMargin: number,
       horizontalMargin: number,
-      fontSize: number,
+      fontSize: number
     ) => {
       this.#fontSizeMap[Position.prefixed](
         verticalMargin,
         horizontalMargin,
-        fontSize,
+        fontSize
       );
       this.#fontSizeMap[Position.suffixed](
         verticalMargin,
         horizontalMargin,
-        fontSize,
+        fontSize
       );
-    },
+    }
   };
 
   #onFocus = () => {
@@ -171,7 +170,7 @@ export class GalFormField extends HTMLElement {
 
   #onBlur = () => {
     this.#formFieldContainer.classList.remove(
-      Selectors.controlContainerFocused,
+      Selectors.controlContainerFocused
     );
   };
 
@@ -208,19 +207,20 @@ export class GalFormField extends HTMLElement {
     this.#fontSizeMap[position](
       verticalMargin,
       horizontalMargin,
-      fontSizeInRem,
+      fontSizeInRem
     );
   }
 
-  public get fontSize() {
-    return this.#fontSize;
-  }
-
+  @GalObserved()
   public set fontSize(fontSize: string) {
     if (this.#fontSize !== fontSize) {
       this.#fontSize = fontSize;
       this.resizeFormField();
     }
+  }
+
+  public get fontSize() {
+    return this.#fontSize;
   }
 
   disconnectedCallback() {
@@ -235,11 +235,9 @@ export class GalFormField extends HTMLElement {
   }
 
   connectedCallback() {
-    if (this.shadowRoot) {
-      this.#formFieldContainer = this.shadowRoot.querySelector(
-        `.${Selectors.controlContainer}`,
-      ) as HTMLDivElement;
-    }
+    this.#formFieldContainer = this.shadowRoot!.querySelector(
+      `.${Selectors.controlContainer}`
+    ) as HTMLDivElement;
 
     this.#label =
       this.querySelector<HTMLLabelElement>('[slot="label"]') || undefined;

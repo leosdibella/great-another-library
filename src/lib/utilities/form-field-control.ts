@@ -9,7 +9,3 @@ export interface GalFormFieldControl extends HTMLElement {
   min?: number;
   step?: number;
 }
-
-export const galFormFieldObservedAttributes: Readonly<string[]> = Object.freeze<
-  string
->(['disabled', 'required', 'readonly', 'value', 'fontSize']);

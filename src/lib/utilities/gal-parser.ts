@@ -1,22 +1,14 @@
-export interface IGalEvent {
-  eventName: string;
-  eventFunctionName: string;
-  querySelector: string;
-  querySelectorIndex: number;
-}
+import { IGalParsedHtml } from './interfaces';
 
-export interface IGalParsedHtml {
-  template: string;
-  events: IGalEvent[];
-}
+export const galEventPrefix = '_GalEvent_';
 
-const galEventPrefix = 'gal-on:';
+const galEventBindingPrefix = 'gal-on:';
 const galEventRegex = /gal-on:[a-zA-Z0-9]+/g;
 
 const galDomParser = (function () {
   const domParser = new DOMParser();
 
-  return function (html: string): HTMLCollection | undefined {
+  return function (html: string) {
     const body =
       domParser.parseFromString(html, 'text/html').querySelector('body') ||
       undefined;
@@ -31,7 +23,7 @@ function htmlCollectionToArray(htmlCollection: HTMLCollection) {
     .filter((e) => !!e) as Element[];
 }
 
-export function parseGalHtml(html: string): IGalParsedHtml | undefined {
+export function parseGalHtml(html: string) {
   let htmlCollection = galDomParser(html);
 
   if (!htmlCollection) {
@@ -40,14 +32,14 @@ export function parseGalHtml(html: string): IGalParsedHtml | undefined {
 
   const parsedHtml: IGalParsedHtml = {
     template: html,
-    events: [],
+    events: []
   };
 
-  const stack: Element[] = htmlCollectionToArray(htmlCollection);
+  const stack = htmlCollectionToArray(htmlCollection);
   const querySelectorIndices: Record<string, number | undefined> = {};
 
   while (stack.length) {
-    const element = stack.pop() as Element;
+    const element = stack.pop()!;
     const attributes = element.attributes;
     const keys = Object.keys(attributes);
 
@@ -57,7 +49,7 @@ export function parseGalHtml(html: string): IGalParsedHtml | undefined {
         const querySelector = `[${attributes[i].name}='${eventFunctionName}']`;
 
         if (querySelectorIndices[querySelector] !== undefined) {
-          ++(querySelectorIndices[querySelector] as number);
+          ++querySelectorIndices[querySelector]!;
         } else {
           querySelectorIndices[querySelector] = 0;
         }
@@ -65,11 +57,11 @@ export function parseGalHtml(html: string): IGalParsedHtml | undefined {
         parsedHtml.events.push({
           eventFunctionName,
           eventName: attributes[i].name.substring(
-            galEventPrefix.length,
-            attributes[i].name.length,
+            galEventBindingPrefix.length,
+            attributes[i].name.length
           ),
           querySelector,
-          querySelectorIndex: querySelectorIndices[querySelector] as number,
+          querySelectorIndex: querySelectorIndices[querySelector]!
         });
       }
     }

@@ -1,4 +1,4 @@
-import { GalCustomElement } from './utilities';
+import { GalCustomElement, GalObserved } from './utilities';
 
 const styles = `
 <style>
@@ -19,20 +19,13 @@ export interface IGalVirtalScrollItem extends HTMLElement {
 export enum GalVirtualScrollDirection {
   vertical = 'vertical',
   horizontal = 'horizontal',
-  all = 'all',
+  all = 'all'
 }
 
-@GalCustomElement<GalVirtualScroll>({
+@GalCustomElement({
   html,
   styles,
-  tag: 'gal-virtual-scroll',
-  observedAttributes: [
-    'itemsId',
-    'customElementId',
-    'viewportHeight',
-    'viewportWidth',
-    'scrollDirection',
-  ],
+  tag: 'gal-virtual-scroll'
 })
 export class GalVirtualScroll extends HTMLElement {
   private static readonly _directionMap: Readonly<
@@ -40,7 +33,7 @@ export class GalVirtualScroll extends HTMLElement {
   > = {
     [GalVirtualScrollDirection.vertical]: 'overflowY',
     [GalVirtualScrollDirection.horizontal]: 'overflowX',
-    [GalVirtualScrollDirection.all]: 'overflow',
+    [GalVirtualScrollDirection.all]: 'overflow'
   };
 
   #itemsId: string = '';
@@ -53,6 +46,7 @@ export class GalVirtualScroll extends HTMLElement {
 
   private readonly _onScroll = () => {};
 
+  @GalObserved()
   public set itemsId(itemsId: string) {}
 
   public get itemsId() {
@@ -65,6 +59,7 @@ export class GalVirtualScroll extends HTMLElement {
     return this.#items;
   }
 
+  @GalObserved()
   public set customElementId(customElementId: string) {}
 
   public get customElementId() {
@@ -77,6 +72,7 @@ export class GalVirtualScroll extends HTMLElement {
     return this.#customElement;
   }
 
+  @GalObserved()
   public set scrollDirection(scrollDirection: GalVirtualScrollDirection) {
     this.#scrollDirection =
       Object.keys(GalVirtualScrollDirection).indexOf(scrollDirection) > -1
@@ -90,6 +86,7 @@ export class GalVirtualScroll extends HTMLElement {
     return this.#scrollDirection;
   }
 
+  @GalObserved()
   public set viewportHeight(viewportHeight: string) {
     this.#viewportHeight = viewportHeight;
   }
@@ -98,6 +95,7 @@ export class GalVirtualScroll extends HTMLElement {
     return this.#viewportHeight;
   }
 
+  @GalObserved()
   public set viewportWidth(viewportWidth: string) {
     this.#viewportWidth = viewportWidth;
   }

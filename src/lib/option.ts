@@ -1,5 +1,5 @@
 import { GalCustomElement } from './utilities/gal-custom-element';
-import { attributeToBoolean } from './utilities';
+import { attributeToBoolean, GalObserved } from './utilities';
 import { Aria } from './utilities/aria';
 
 const styles = `
@@ -12,16 +12,16 @@ const html = `
 </slot>
 `;
 
-@GalCustomElement<GalOption>({
+@GalCustomElement({
   html,
   styles,
-  tag: 'gal-option',
-  observedAttributes: ['disabled', 'fontSize'],
+  tag: 'gal-option'
 })
 export class GalOption extends HTMLElement {
   #disabled: boolean = false;
   #fontSize: string = '1rem';
 
+  @GalObserved()
   public set fontSize(fontSize: string) {
     this.#fontSize = fontSize;
   }
@@ -30,6 +30,7 @@ export class GalOption extends HTMLElement {
     return this.#fontSize;
   }
 
+  @GalObserved()
   public set disabled(disabled: boolean) {
     this.#disabled = attributeToBoolean(disabled);
     this.setAttribute(Aria.disabled, `${this.#disabled}`);
