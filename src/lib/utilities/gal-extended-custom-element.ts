@@ -1,9 +1,11 @@
 import {
   IGalEventHistory,
   IGalExtendedCustomElement,
-  IGalObservable
+  IGalObservable,
+  IGalHostable
 } from './interfaces';
 import { generateAttributeChangedCallback } from './attribute-changed-callback';
+import { bindGalEvents } from './bind-gal-events';
 
 export function GalExtendedCustomElement(
   galExtendedCustomElement: IGalExtendedCustomElement
@@ -18,6 +20,7 @@ export function GalExtendedCustomElement(
       }
 
       #eventListeners: Record<string, IGalEventHistory | undefined> = {};
+
       #attributeChangedCallback: (
         name: string,
         from: string,
@@ -34,6 +37,12 @@ export function GalExtendedCustomElement(
 
       constructor(...args: any[]) {
         super();
+
+        bindGalEvents(
+          this,
+          ((customElement.prototype as unknown) as IGalHostable)
+            .galHostEvents || []
+        );
       }
     };
 

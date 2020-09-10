@@ -9,3 +9,4 @@ export * from './gal-extended-custom-element';
 export * from './aria';
 export * from './attribute-changed-callback';
 export * from './property-setter';
+export * from './bind-gal-events';

@@ -1,19 +1,6 @@
 import { IGalObservable, IGalEventHistory } from './interfaces';
 import { galEventPrefix } from './gal-parser';
 
-function setProperty(
-  instance: HTMLElement,
-  observedProperties: Record<string, unknown>,
-  name: string,
-  value: unknown
-) {
-  if (!observedProperties) {
-    return;
-  }
-
-  (instance[observedProperties[name] as keyof HTMLElement] as unknown) = value;
-}
-
 export function generateAttributeChangedCallback<
   S extends CustomElementConstructor
 >(
@@ -43,13 +30,17 @@ export function generateAttributeChangedCallback<
       eventListeners[name] = {
         eventName: to,
         eventFunction: (event: CustomEvent<unknown>) => {
-          setProperty(instance, observedProperties, name, event.detail);
+          if (observedProperties) {
+            (this[
+              observedProperties[name] as keyof HTMLElement
+            ] as unknown) = event.detail;
+          }
         }
       };
 
       this.addEventListener(to, eventListeners[name]!.eventFunction);
-    } else {
-      setProperty(instance, observedProperties, name, to);
+    } else if (observedProperties) {
+      (this[observedProperties[name] as keyof HTMLElement] as unknown) = to;
     }
   }.bind(instance);
 }

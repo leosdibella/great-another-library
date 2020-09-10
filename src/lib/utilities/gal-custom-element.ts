@@ -8,6 +8,7 @@ import {
   IGalHostable
 } from './interfaces';
 import { generateAttributeChangedCallback } from './attribute-changed-callback';
+import { bindGalEvents } from './bind-gal-events';
 
 export function GalCustomElement(galCustomElement: IGalCustomElement) {
   return function <S extends CustomElementConstructor>(customElement: S) {
@@ -22,9 +23,11 @@ export function GalCustomElement(galCustomElement: IGalCustomElement) {
     const templateId = `${galCustomElement.tag}-template`;
 
     if (customElements.get(galCustomElement.tag)) {
-      throw new Error(
+      console.error(
         'GalCustomElement constructor error: duplicate custom element tag detected!'
       );
+
+      return;
     }
 
     const parsedHtml = parseGalHtml(galCustomElement.html);
@@ -54,6 +57,7 @@ export function GalCustomElement(galCustomElement: IGalCustomElement) {
       }
 
       #eventListeners: Record<string, IGalEventHistory | undefined> = {};
+
       #attributeChangedCallback: (
         name: string,
         from: string,
@@ -81,32 +85,7 @@ export function GalCustomElement(galCustomElement: IGalCustomElement) {
             .galHostEvents || [])
         ];
 
-        for (let i = 0; i < events.length; ++i) {
-          const event = this[
-            events[i].eventFunctionName as keyof this
-          ] as this[keyof this] & ((event: Event) => void);
-
-          if (typeof event !== 'function') {
-            continue;
-          }
-
-          const eventBoundElement =
-            events[i].querySelector &&
-            events[i].querySelectorIndex !== undefined
-              ? this.shadowRoot!.querySelectorAll(
-                  events[i].querySelector!.replace(/\:/g, '\\:')
-                )[events[i].querySelectorIndex!]
-              : this;
-
-          if (!eventBoundElement) {
-            continue;
-          }
-
-          eventBoundElement.addEventListener(
-            events[i].eventName,
-            event.bind(this)
-          );
-        }
+        bindGalEvents(this, events);
       }
     };
 
