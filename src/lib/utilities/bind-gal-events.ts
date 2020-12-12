@@ -1,5 +1,5 @@
 import { IGalEventBinding } from './interfaces';
-import { isFunction } from './utilities';
+import { isFunction, isWellDefined } from './utilities';
 
 export function bindGalEvents(
   instance: HTMLElement,
@@ -15,19 +15,17 @@ export function bindGalEvents(
     }
 
     const eventBoundElement =
-      events[i].querySelector && events[i].querySelectorIndex !== undefined
+      events[i].querySelector && isWellDefined(events[i].querySelectorIndex)
         ? instance.shadowRoot!.querySelectorAll(
             events[i].querySelector!.replace(/\:/g, '\\:')
           )[events[i].querySelectorIndex!]
         : instance;
 
-    if (!eventBoundElement) {
-      continue;
+    if (eventBoundElement) {
+      eventBoundElement.addEventListener(
+        events[i].eventName,
+        event.bind(instance)
+      );
     }
-
-    eventBoundElement.addEventListener(
-      events[i].eventName,
-      event.bind(instance)
-    );
   }
 }

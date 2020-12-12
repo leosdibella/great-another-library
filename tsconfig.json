@@ -1,28 +1,25 @@
 {
-    "compilerOptions": {
-        "experimentalDecorators": true,
-        "alwaysStrict": true,
-        "noUnusedLocals": true,
-        "moduleResolution": "node",
-        "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "strictNullChecks": true,
-        "strictPropertyInitialization": true,
-        "pretty": true,
-        "target": "ESNext",
-        "noEmit": true,
-        "baseUrl": ".",
-        "paths": {
-          "src/*": ["src/*"],
-          "public/*": ["public/*"],
-        }
-    },
-    "include": [
-        "src"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "moduleResolution": "node",
+    "module": "es2015",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "pretty": true,
+    "target": "ESNext",
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"],
+      "public/*": ["public/*"]
+    }
+  },
+  "include": ["src", "spec"],
+  "exclude": ["node_modules"]
 }

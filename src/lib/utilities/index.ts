@@ -6,7 +6,7 @@ export * from './gal-host-event';
 export * from './deep-copy';
 export * from './gal-observed';
 export * from './gal-extended-custom-element';
-export * from './aria';
 export * from './attribute-changed-callback';
 export * from './property-setter';
 export * from './bind-gal-events';
+export * from './gal-mixin';

@@ -1,4 +1,4 @@
-import { uuid } from './utilities';
+import { isWellDefined, uuid } from './utilities';
 
 export class Receiver<T, S = undefined, U extends string = string> {
   #respond?: (line: string, value: S) => void;
@@ -105,7 +105,7 @@ export class Bridge<T, U extends string = string> {
   readonly #channelId: string = (() => {
     let channelId = uuid();
 
-    while (Bridge.channels[channelId] !== undefined) {
+    while (isWellDefined(Bridge.channels[channelId])) {
       channelId = uuid();
     }
 

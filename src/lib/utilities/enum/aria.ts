@@ -3,5 +3,5 @@ export enum Aria {
   readonly = 'readonly',
   required = 'required',
   invalid = 'invalid',
-  multiselectable = 'multiselectable',
+  multiselectable = 'multiselectable'
 }

@@ -24,7 +24,7 @@ const html = `
       Oh Look a big 'ole primary button
     </button>
     <button
-      gal-on:click="alertClickedSecondaryButton"
+      gal-event:click="alertClickedSecondaryButton"
       is="gal-button"
       color="secondary"
       size="small">
@@ -56,7 +56,7 @@ const html = `
 @GalCustomElement({
   styles,
   html,
-  tag: 'gal-doc-button',
+  tag: 'gal-doc-button'
 })
 export class GalDocButton extends HTMLElement {
   public someText =

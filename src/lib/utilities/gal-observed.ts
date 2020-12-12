@@ -2,7 +2,7 @@ import { IGalObservable } from './interfaces/i-gal-observable';
 import { camelCaseToKebabCase } from './utilities';
 
 export function GalObserved() {
-  return function (target: HTMLElement, propertyKey: string) {
+  return function (target: unknown, propertyKey: string) {
     const targetType = (target as unknown) as IGalObservable;
 
     if (!targetType.galObservedAttributees) {

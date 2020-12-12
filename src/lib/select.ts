@@ -1,6 +1,6 @@
 import { GalCustomElement } from './utilities/gal-custom-element';
 import { attributeToBoolean, GalObserved } from './utilities';
-import { Aria } from './utilities/aria';
+import { Aria } from './utilities/enum';
 import { GalFormFieldControl } from './utilities/form-field-control';
 
 enum Selectors {
@@ -17,7 +17,7 @@ const styles = `
 
 const html = `
 <div
-  gal-on:click="focus"
+  gal-event:click="focus"
   class="${Selectors.listbox}"
   tabindex="0"
   role="listbox">

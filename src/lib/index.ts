@@ -4,3 +4,4 @@ export * from './virtual-scroll';
 export * from './form-field';
 export * from './select';
 export * from './option';
+export * from './skeleton-loader';

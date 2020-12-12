@@ -1,6 +1,6 @@
 import { GalCustomElement } from './utilities/gal-custom-element';
 import { attributeToBoolean, GalObserved } from './utilities';
-import { Aria } from './utilities/aria';
+import { Aria } from './utilities/enum';
 
 const styles = `
 <style>

@@ -24,6 +24,12 @@ export function uuid() {
 
 export const doNothing = () => {};
 
+function isAlpha(value?: string) {
+  const charCode = (value || '').charCodeAt(0);
+
+  return (charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123);
+}
+
 export function camelCaseToKebabCase(string: string) {
   if (!isNonEmptyString(string)) {
     return '';
@@ -34,7 +40,8 @@ export function camelCaseToKebabCase(string: string) {
 
   for (let i = 0; i < string.length; ++i) {
     char = string[i].toLowerCase();
-    kebabCase += (char !== string[i] ? '-' : '') + char;
+    kebabCase +=
+      (char !== string[i] && isAlpha(string[i - 1]) ? '-' : '') + char;
   }
 
   return kebabCase;

@@ -122,14 +122,12 @@ export function deepCopy(value: unknown) {
 
     mapFromPath(property, copy as Record<string, unknown>, copiedPropertyValue);
 
-    if (skipExpansion) {
-      continue;
-    }
+    if (!skipExpansion) {
+      const properties = getProperties(property);
 
-    const properties = getProperties(property);
-
-    for (let i = 0; i < properties.length; ++i) {
-      stack.push(properties[i]);
+      for (let i = 0; i < properties.length; ++i) {
+        stack.push(properties[i]);
+      }
     }
   }
 

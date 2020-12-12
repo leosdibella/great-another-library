@@ -23,11 +23,9 @@ export function GalCustomElement(galCustomElement: IGalCustomElement) {
     const templateId = `${galCustomElement.tag}-template`;
 
     if (customElements.get(galCustomElement.tag)) {
-      console.error(
+      throw new Error(
         'GalCustomElement constructor error: duplicate custom element tag detected!'
       );
-
-      return;
     }
 
     const parsedHtml = parseGalHtml(galCustomElement.html);

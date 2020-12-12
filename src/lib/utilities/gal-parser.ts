@@ -1,9 +1,19 @@
+import { GalAttribute, galAttributes } from './enum';
+import { getGalMixin } from './gal-mixin';
 import { IGalParsedHtml } from './interfaces';
+import { isWellDefined } from './utilities';
 
-export const galEventPrefix = '_GalEvent_';
+export const galEventPrefix = 'GalEvent_';
 
-const galEventBindingPrefix = 'gal-on:';
-const galEventRegex = /gal-on:[a-zA-Z0-9]+/g;
+const galAttributePrefixes = (() => {
+  const attributePrefixes: Partial<Record<GalAttribute, string>> = {};
+
+  galAttributes.forEach((at) => {
+    attributePrefixes[at] = `gal-${at}:`;
+  });
+
+  return attributePrefixes;
+})();
 
 const galDomParser = (function () {
   const domParser = new DOMParser();
@@ -32,7 +42,8 @@ export function parseGalHtml(html: string) {
 
   const parsedHtml: IGalParsedHtml = {
     template: html,
-    events: []
+    events: [],
+    mixins: []
   };
 
   const stack = htmlCollectionToArray(htmlCollection);
@@ -44,33 +55,52 @@ export function parseGalHtml(html: string) {
     const keys = Object.keys(attributes);
 
     for (let i = 0; i < keys.length; ++i) {
-      if (attributes[i].name.match(galEventRegex)) {
-        const eventFunctionName = attributes[i].nodeValue || '';
-        const querySelector = `[${attributes[i].name}='${eventFunctionName}']`;
+      const attribute = attributes[i];
 
-        if (querySelectorIndices[querySelector] !== undefined) {
-          ++querySelectorIndices[querySelector]!;
-        } else {
-          querySelectorIndices[querySelector] = 0;
+      const galAttribute: GalAttribute | undefined = galAttributes.filter(
+        (ga) => attribute.name.indexOf(galAttributePrefixes[ga]!) === 0
+      )[0];
+
+      if (!galAttribute) {
+        continue;
+      }
+
+      const galAttributePrefixe = galAttributePrefixes[galAttribute]!;
+      const sanitizedAttributeName = attribute.name.substring(
+        galAttributePrefixe.length,
+        attribute.name.length
+      );
+      const attributeValue = attribute.nodeValue || '';
+      const querySelector = `[${attribute.name}='${attributeValue}']`;
+
+      if (isWellDefined(querySelectorIndices[querySelector])) {
+        ++querySelectorIndices[querySelector]!;
+      } else {
+        querySelectorIndices[querySelector] = 0;
+      }
+
+      switch (galAttribute) {
+        case GalAttribute.event: {
+          parsedHtml.events.push({
+            eventFunctionName: attributeValue,
+            eventName: sanitizedAttributeName,
+            querySelector,
+            querySelectorIndex: querySelectorIndices[querySelector]!
+          });
         }
+        case GalAttribute.mixin: {
+          const mixin = getGalMixin(sanitizedAttributeName);
 
-        parsedHtml.events.push({
-          eventFunctionName,
-          eventName: attributes[i].name.substring(
-            galEventBindingPrefix.length,
-            attributes[i].name.length
-          ),
-          querySelector,
-          querySelectorIndex: querySelectorIndices[querySelector]!
-        });
+          if (mixin) {
+            parsedHtml.mixins.push(mixin);
+          }
+        }
       }
     }
 
-    if (!element.children.length) {
-      continue;
+    if (element.children.length) {
+      htmlCollectionToArray(element.children).forEach((e) => stack.push(e));
     }
-
-    htmlCollectionToArray(element.children).forEach((e) => stack.push(e));
   }
 
   return parsedHtml;

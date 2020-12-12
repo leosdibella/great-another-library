@@ -1,7 +1,6 @@
 {
-  "presets": [
-    "@babel/preset-typescript"
-  ],
+  "sourceMaps": true,
+  "presets": ["@babel/preset-typescript"],
   "plugins": [
     [
       "@babel/plugin-proposal-decorators",
